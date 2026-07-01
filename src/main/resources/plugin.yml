@@ -1,0 +1,9 @@
+name: LZBR
+description: $description
+version: '${version}'
+
+main: com.github.Glatinis.lZBR.LZBR
+api-version: '26.1.2'
+load: POSTWORLD
+
+authors: [ Glatinis ]
