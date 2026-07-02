@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class LobbyManager {
+    // TODO: Get max lobby size from config
+    private final int MAX_SIZE = 25;
     private List<UUID> lobbyPlayers = new ArrayList<>();
 
     public LobbyManager() {}
@@ -19,15 +21,15 @@ public class LobbyManager {
         lobbyPlayers.add(playerUUID);
     }
 
-    public void addLobbyPlayer(Player player) {
-        lobbyPlayers.add(player.getUniqueId());
-    }
-
     public void removeLobbyPlayer(UUID playerUUID) {
         lobbyPlayers.remove(playerUUID);
     }
 
-    public void removeLobbyPlayer(Player player) {
-        lobbyPlayers.remove(player.getUniqueId());
+    public boolean isInLobby(UUID playerUUID) {
+        return lobbyPlayers.contains(playerUUID);
+    }
+
+    public boolean isFull() {
+        return lobbyPlayers.size() >= MAX_SIZE;
     }
 }
