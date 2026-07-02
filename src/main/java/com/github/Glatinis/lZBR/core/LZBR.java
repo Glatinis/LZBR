@@ -2,6 +2,7 @@ package com.github.Glatinis.lZBR.core;
 
 import com.github.Glatinis.lZBR.commands.LZBRCommand;
 import com.github.Glatinis.lZBR.gamestate.GameStateController;
+import com.github.Glatinis.lZBR.gamestate.lobby.LobbyManager;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,10 +12,12 @@ import java.util.List;
 public final class LZBR extends JavaPlugin {
 
     private GameStateController gameStateController;
+    private LobbyManager lobbyManager;
 
     @Override
     public void onEnable() {
-        gameStateController = new GameStateController();
+        lobbyManager = new LobbyManager();
+        gameStateController = new GameStateController(lobbyManager);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();
