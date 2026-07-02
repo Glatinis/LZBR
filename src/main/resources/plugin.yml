@@ -2,7 +2,7 @@ name: LZBR
 description: $description
 version: '${version}'
 
-main: com.github.Glatinis.lZBR.LZBR
+main: com.github.Glatinis.lZBR.core.LZBR
 api-version: '26.1.2'
 load: POSTWORLD
 
