@@ -18,13 +18,13 @@ public class GameStateController {
         return gameState;
     }
 
-    public StartCode startMatch() {
+    public StartCode startBR() {
         if (gameState != GameState.LOBBY)
-            return StartCode.MATCH_IN_PROGRESS;
+            return StartCode.GAME_IN_PROGRESS;
 
         // TODO: Add player check to return error if player count too low
 
-        gameState = GameState.PRE_MATCH;
+        gameState = GameState.PRE_GAME;
         return StartCode.SUCCESS;
     }
 

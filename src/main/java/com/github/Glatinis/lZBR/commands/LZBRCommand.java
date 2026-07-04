@@ -34,10 +34,10 @@ public class LZBRCommand {
     private int executeStart(CommandContext<CommandSourceStack> ctx) {
         CommandSender sender = ctx.getSource().getSender();
 
-        StartCode started = gameStateController.startMatch();
+        StartCode started = gameStateController.startBR();
 
-        if (started.equals(StartCode.MATCH_IN_PROGRESS)) {
-            sender.sendMessage(Component.text("The match is already in progress.")
+        if (started.equals(StartCode.GAME_IN_PROGRESS)) {
+            sender.sendMessage(Component.text("The Battle Royale is already in progress.")
                     .color(NamedTextColor.RED));
         }
         else if (started.equals(StartCode.PLAYER_COUNT_INSUFFICIENT)) {
@@ -45,7 +45,7 @@ public class LZBRCommand {
                     .color(NamedTextColor.RED));
         }
         else if (started.equals(StartCode.SUCCESS)) {
-            sender.sendMessage(Component.text("Match starting...").color(NamedTextColor.GREEN));
+            sender.sendMessage(Component.text("Battle Royale starting...").color(NamedTextColor.GREEN));
         }
 
         return Command.SINGLE_SUCCESS;
