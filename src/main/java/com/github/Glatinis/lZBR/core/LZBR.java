@@ -12,15 +12,17 @@ import java.util.List;
 
 public final class LZBR extends JavaPlugin {
 
+    private ConfigRepository configRepository;
     private GameStateController gameStateController;
     private LobbyManager lobbyManager;
     private WorldController worldController;
 
     @Override
     public void onEnable() {
-        lobbyManager = new LobbyManager();
+        configRepository = new ConfigRepository(this);
+        lobbyManager = new LobbyManager(configRepository);
         gameStateController = new GameStateController(lobbyManager);
-        worldController = new WorldController(this);
+        worldController = new WorldController(this, configRepository);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();

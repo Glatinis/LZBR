@@ -1,17 +1,18 @@
 package com.github.Glatinis.lZBR.gamestate.lobby;
 
-import org.bukkit.entity.Player;
+import com.github.Glatinis.lZBR.core.ConfigRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class LobbyManager {
-    // TODO: Get max lobby size from config
-    private final int MAX_SIZE = 25;
+    private final ConfigRepository configRepository;
     private List<UUID> lobbyPlayers = new ArrayList<>();
 
-    public LobbyManager() {}
+    public LobbyManager(ConfigRepository configRepository) {
+        this.configRepository = configRepository;
+    }
 
     public List<UUID> getLobbyPlayers() {
         return lobbyPlayers;
@@ -30,6 +31,6 @@ public class LobbyManager {
     }
 
     public boolean isFull() {
-        return lobbyPlayers.size() >= MAX_SIZE;
+        return lobbyPlayers.size() >= configRepository.getMaximumPlayerCount();
     }
 }

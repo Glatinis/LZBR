@@ -1,5 +1,6 @@
 package com.github.Glatinis.lZBR.world;
 
+import com.github.Glatinis.lZBR.core.ConfigRepository;
 import com.github.Glatinis.lZBR.core.LZBR;
 import org.bukkit.entity.Player;
 import org.mvplugins.multiverse.core.MultiverseCoreApi;
@@ -7,11 +8,13 @@ import org.mvplugins.multiverse.core.world.WorldManager;
 
 public class WorldController {
     private final LZBR plugin;
+    private final ConfigRepository configRepository;
     private MultiverseCoreApi multiverseApi;
     private boolean multiverseAvailable = false;
 
-    public WorldController(LZBR plugin) {
+    public WorldController(LZBR plugin, ConfigRepository configRepository) {
         this.plugin = plugin;
+        this.configRepository = configRepository;
         hookMultiverse();
     }
 
@@ -34,7 +37,7 @@ public class WorldController {
         }
 
         WorldManager worldManager = multiverseApi.getWorldManager();
-        worldManager.getWorld("br").peek(mvWorld -> {
+        worldManager.getWorld(configRepository.getBrWorldName()).peek(mvWorld -> {
             player.teleport(mvWorld.getSpawnLocation());
         }).onEmpty(() -> {
             plugin.getLogger().warning("Could not find BR world.");
@@ -48,7 +51,7 @@ public class WorldController {
         }
 
         WorldManager worldManager = multiverseApi.getWorldManager();
-        worldManager.getWorld("lobby").peek(mvWorld -> {
+        worldManager.getWorld(configRepository.getLobbyWorldName()).peek(mvWorld -> {
             player.teleport(mvWorld.getSpawnLocation());
         }).onEmpty(() -> {
             plugin.getLogger().warning("Could not find lobby world.");
