@@ -1,7 +1,5 @@
 package com.github.Glatinis.lZBR.gamestate.br;
 
-import com.github.Glatinis.lZBR.gamestate.GameStateController;
-import com.github.Glatinis.lZBR.world.WorldController;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
