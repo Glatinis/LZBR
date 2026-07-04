@@ -3,6 +3,7 @@ package com.github.Glatinis.lZBR.commands;
 import com.github.Glatinis.lZBR.gamestate.GameStateController;
 import com.github.Glatinis.lZBR.returncode.JoinCode;
 import com.github.Glatinis.lZBR.returncode.StartCode;
+import com.github.Glatinis.lZBR.world.WorldController;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -15,9 +16,11 @@ import org.bukkit.entity.Player;
 
 public class LZBRCommand {
     private GameStateController gameStateController;
+    private WorldController worldController;
 
-    public LZBRCommand(GameStateController gameStateController) {
+    public LZBRCommand(GameStateController gameStateController, WorldController worldController) {
         this.gameStateController = gameStateController;
+        this.worldController = worldController;
     }
 
     public LiteralCommandNode<CommandSourceStack> build() {
@@ -34,7 +37,7 @@ public class LZBRCommand {
     private int executeStart(CommandContext<CommandSourceStack> ctx) {
         CommandSender sender = ctx.getSource().getSender();
 
-        StartCode started = gameStateController.startBR();
+        StartCode started = gameStateController.startGame();
 
         if (started.equals(StartCode.GAME_IN_PROGRESS)) {
             sender.sendMessage(Component.text("The Battle Royale is already in progress.")
@@ -44,8 +47,13 @@ public class LZBRCommand {
             sender.sendMessage(Component.text("There are not enough players to start the match.")
                     .color(NamedTextColor.RED));
         }
+        else if (!worldController.isMultiverseAvailable()) {
+            sender.sendMessage(Component.text("Multiverse-Core is not loaded... Cannot start the game without it.")
+                    .color(NamedTextColor.RED));
+        }
         else if (started.equals(StartCode.SUCCESS)) {
             sender.sendMessage(Component.text("Battle Royale starting...").color(NamedTextColor.GREEN));
+            gameStateController.startGame();
         }
 
         return Command.SINGLE_SUCCESS;

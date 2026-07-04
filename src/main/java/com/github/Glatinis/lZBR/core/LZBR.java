@@ -2,6 +2,8 @@ package com.github.Glatinis.lZBR.core;
 
 import com.github.Glatinis.lZBR.commands.LZBRCommand;
 import com.github.Glatinis.lZBR.gamestate.GameStateController;
+import com.github.Glatinis.lZBR.gamestate.br.BRManager;
+import com.github.Glatinis.lZBR.gamestate.br.BRService;
 import com.github.Glatinis.lZBR.gamestate.lobby.LobbyManager;
 import com.github.Glatinis.lZBR.world.WorldController;
 import io.papermc.paper.command.brigadier.Commands;
@@ -14,20 +16,27 @@ public final class LZBR extends JavaPlugin {
 
     private ConfigRepository configRepository;
     private GameStateController gameStateController;
-    private LobbyManager lobbyManager;
     private WorldController worldController;
+
+    private BRManager brManager;
+    private BRService brService;
+    private LobbyManager lobbyManager;
 
     @Override
     public void onEnable() {
         configRepository = new ConfigRepository(this);
-        lobbyManager = new LobbyManager(configRepository);
-        gameStateController = new GameStateController(lobbyManager);
         worldController = new WorldController(this, configRepository);
+
+        lobbyManager = new LobbyManager(configRepository);
+        brService = new BRService(worldController);
+        brManager = new BRManager(brService);
+
+        gameStateController = new GameStateController(lobbyManager, brManager);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();
             commands.register(
-                    new LZBRCommand(gameStateController).build(),
+                    new LZBRCommand(gameStateController, worldController).build(),
                     "LiveZone Battle Royale admin command",
                     List.of("lz") // alias so /lz start also works
             );

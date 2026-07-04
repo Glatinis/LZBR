@@ -1,30 +1,47 @@
 package com.github.Glatinis.lZBR.gamestate;
 
+import com.github.Glatinis.lZBR.gamestate.br.BRManager;
 import com.github.Glatinis.lZBR.gamestate.lobby.LobbyManager;
 import com.github.Glatinis.lZBR.returncode.JoinCode;
 import com.github.Glatinis.lZBR.returncode.StartCode;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class GameStateController {
     private GameState gameState = GameState.LOBBY;
 
     private LobbyManager lobbyManager;
+    private BRManager brManager;
 
-    public GameStateController(LobbyManager lobbyManager) {
+    public GameStateController(LobbyManager lobbyManager, BRManager brManager) {
         this.lobbyManager = lobbyManager;
+        this.brManager = brManager;
     }
 
     public GameState getGameState() {
         return gameState;
     }
 
-    public StartCode startBR() {
+    public StartCode startGame() {
         if (gameState != GameState.LOBBY)
             return StartCode.GAME_IN_PROGRESS;
 
         // TODO: Add player check to return error if player count too low
 
         gameState = GameState.PRE_GAME;
+
+        // TODO: Also implement listener for detecting leaving players so this is a safeguard only
+        List<Player> onlinePlayers = lobbyManager.getLobbyPlayers().stream()
+                .map(Bukkit::getPlayer)
+                .filter(Objects::nonNull)
+                .toList();
+
+        brManager.startPreGame(onlinePlayers);
+
         return StartCode.SUCCESS;
     }
 
