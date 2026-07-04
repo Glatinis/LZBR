@@ -3,6 +3,7 @@ package com.github.Glatinis.lZBR.core;
 import com.github.Glatinis.lZBR.commands.LZBRCommand;
 import com.github.Glatinis.lZBR.gamestate.GameStateController;
 import com.github.Glatinis.lZBR.gamestate.lobby.LobbyManager;
+import com.github.Glatinis.lZBR.world.WorldController;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,11 +14,13 @@ public final class LZBR extends JavaPlugin {
 
     private GameStateController gameStateController;
     private LobbyManager lobbyManager;
+    private WorldController worldController;
 
     @Override
     public void onEnable() {
         lobbyManager = new LobbyManager();
         gameStateController = new GameStateController(lobbyManager);
+        worldController = new WorldController(this);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();
@@ -27,6 +30,10 @@ public final class LZBR extends JavaPlugin {
                     List.of("lz") // alias so /lz start also works
             );
         });
+
+        if (getServer().getPluginManager().getPlugin("Multiverse-Core") == null) {
+            getLogger().severe("Multiverse-Core is not installed! World switching will not work until it's added.");
+        }
 
         getLogger().info("Loaded plugin");
     }
