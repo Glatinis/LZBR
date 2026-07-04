@@ -1,0 +1,5 @@
+minimum-player-count: 2
+maximum-player-count: 25
+
+lobby-world-name: lobby
+br-world-name: br
