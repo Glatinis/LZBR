@@ -8,6 +8,8 @@ import com.github.Glatinis.lZBR.gamestate.lobby.LobbyManager;
 import com.github.Glatinis.lZBR.gamestate.listeners.PlayerBRListener;
 import com.github.Glatinis.lZBR.gamestate.listeners.PlayerQuitListener;
 import com.github.Glatinis.lZBR.world.WorldController;
+import com.github.Glatinis.lZBR.world.ZoneBorder;
+import com.github.Glatinis.lZBR.world.ZoneController;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,6 +25,7 @@ public final class LZBR extends JavaPlugin {
     private BRManager brManager;
     private BRService brService;
     private LobbyManager lobbyManager;
+    private ZoneController zoneController;
 
     @Override
     public void onEnable() {
@@ -30,10 +33,19 @@ public final class LZBR extends JavaPlugin {
         worldController = new WorldController(this, configRepository);
 
         lobbyManager = new LobbyManager(configRepository);
+
+        ZoneBorder zoneBorder = null;
+        if (getServer().getPluginManager().getPlugin("packetevents") != null) {
+            zoneBorder = new ZoneBorder(configRepository);
+        } else {
+            getLogger().warning("PacketEvents not installed — zone border visuals will be disabled.");
+        }
+        zoneController = new ZoneController(this, configRepository, zoneBorder);
+
         brService = new BRService(worldController);
         brManager = new BRManager(brService);
 
-        gameStateController = new GameStateController(lobbyManager, brManager);
+        gameStateController = new GameStateController(lobbyManager, brManager, zoneController);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();
@@ -56,6 +68,7 @@ public final class LZBR extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (zoneController != null) zoneController.stop();
         getLogger().info("Unloaded plugin");
     }
 }

@@ -5,6 +5,7 @@ import com.github.Glatinis.lZBR.gamestate.lobby.LobbyManager;
 import com.github.Glatinis.lZBR.returncode.JoinCode;
 import com.github.Glatinis.lZBR.returncode.LeaveCode;
 import com.github.Glatinis.lZBR.returncode.StartCode;
+import com.github.Glatinis.lZBR.world.ZoneController;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -16,10 +17,12 @@ public class GameStateController {
 
     private LobbyManager lobbyManager;
     private BRManager brManager;
+    private ZoneController zoneController;
 
-    public GameStateController(LobbyManager lobbyManager, BRManager brManager) {
+    public GameStateController(LobbyManager lobbyManager, BRManager brManager, ZoneController zoneController) {
         this.lobbyManager = lobbyManager;
         this.brManager = brManager;
+        this.zoneController = zoneController;
     }
 
     public GameState getGameState() {
@@ -41,6 +44,7 @@ public class GameStateController {
                 .toList();
 
         brManager.startPreGame(onlinePlayers);
+        zoneController.start(onlinePlayers, brManager::getPlayers);
 
         return StartCode.SUCCESS;
     }
@@ -86,5 +90,13 @@ public class GameStateController {
 
     public boolean isSpectatorInBR(Player player) {
         return brManager.isSpectator(player.getUniqueId());
+    }
+
+    public void sendZoneBorder(Player player) {
+        zoneController.sendBorderTo(player);
+    }
+
+    public void stopZone() {
+        zoneController.stop();
     }
 }

@@ -3,3 +3,15 @@ maximum-player-count: 25
 
 lobby-world-name: lobby
 br-world-name: br
+
+zone:
+  center-x: 0
+  center-z: 0
+  initial-radius: 500
+  final-radius: 50
+  shrink-delay: 60
+  shrink-duration: 300
+  damage-amount: 1.0
+  damage-interval: 20
+  warning-distance: 5
+  warning-time: 10
