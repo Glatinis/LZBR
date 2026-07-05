@@ -20,6 +20,10 @@ java {
 }
 
 tasks {
+    jar {
+        destinationDirectory.set(file("""C:\Users\rayan\Desktop\paper testing servs\26.1.2\plugins"""))
+    }
+
     runServer {
         // Configure the Minecraft version for our task.
         // This is the only required configuration besides applying the plugin.

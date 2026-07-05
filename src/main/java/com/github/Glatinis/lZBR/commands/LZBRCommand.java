@@ -2,6 +2,7 @@ package com.github.Glatinis.lZBR.commands;
 
 import com.github.Glatinis.lZBR.gamestate.GameStateController;
 import com.github.Glatinis.lZBR.returncode.JoinCode;
+import com.github.Glatinis.lZBR.returncode.LeaveCode;
 import com.github.Glatinis.lZBR.returncode.StartCode;
 import com.github.Glatinis.lZBR.world.WorldController;
 import com.mojang.brigadier.Command;
@@ -26,11 +27,14 @@ public class LZBRCommand {
     public LiteralCommandNode<CommandSourceStack> build() {
         return Commands.literal("lzbr")
                 .then(Commands.literal("start")
-                    .requires(source -> source.getSender().hasPermission("lzbr.admin"))
-                    .executes(this::executeStart))
-                .then(Commands.literal("join"))
-                    .requires(source -> source.getSender() instanceof Player)
-                    .executes(this::executeJoin)
+                        .requires(source -> source.getSender().hasPermission("lzbr.admin"))
+                        .executes(this::executeStart))
+                .then(Commands.literal("join")
+                        .requires(source -> source.getSender() instanceof Player)
+                        .executes(this::executeJoin))
+                .then(Commands.literal("leave")
+                        .requires(source -> source.getSender() instanceof Player)
+                        .executes(this::executeLeave))
                 .build();
     }
 
@@ -78,6 +82,25 @@ public class LZBRCommand {
         }
         else if (returnCode.equals(JoinCode.SUCCESS)) {
             plr.sendMessage(Component.text("Joining lobby...")
+                    .color(NamedTextColor.GREEN));
+        }
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private int executeLeave(CommandContext<CommandSourceStack> ctx) {
+        Player plr = (Player) ctx.getSource().getSender();
+
+        LeaveCode returnCode = gameStateController.leaveLobby(plr);
+
+        if (returnCode.equals(LeaveCode.NOT_IN_LOBBY)) {
+            plr.sendMessage(Component.text("You are not in the lobby.")
+                    .color(NamedTextColor.YELLOW));
+        } else if (returnCode.equals(LeaveCode.GAME_STARTED)) {
+            plr.sendMessage(Component.text("You cannot leave the queue once the game has started.")
+                    .color(NamedTextColor.RED));
+        } else if (returnCode.equals(LeaveCode.SUCCESS)) {
+            plr.sendMessage(Component.text("You have left the lobby queue.")
                     .color(NamedTextColor.GREEN));
         }
 

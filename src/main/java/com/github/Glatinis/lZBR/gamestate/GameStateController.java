@@ -3,6 +3,7 @@ package com.github.Glatinis.lZBR.gamestate;
 import com.github.Glatinis.lZBR.gamestate.br.BRManager;
 import com.github.Glatinis.lZBR.gamestate.lobby.LobbyManager;
 import com.github.Glatinis.lZBR.returncode.JoinCode;
+import com.github.Glatinis.lZBR.returncode.LeaveCode;
 import com.github.Glatinis.lZBR.returncode.StartCode;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -55,5 +56,15 @@ public class GameStateController {
 
         lobbyManager.addLobbyPlayer(player.getUniqueId());
         return JoinCode.SUCCESS;
+    }
+
+    public LeaveCode leaveLobby(Player player) {
+        if (!lobbyManager.isInLobby(player.getUniqueId()))
+            return LeaveCode.NOT_IN_LOBBY;
+        else if (!gameState.equals(GameState.LOBBY))
+            return LeaveCode.GAME_STARTED;
+
+        lobbyManager.removeLobbyPlayer(player.getUniqueId());
+        return LeaveCode.SUCCESS;
     }
 }

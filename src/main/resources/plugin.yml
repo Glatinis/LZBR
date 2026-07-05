@@ -7,4 +7,9 @@ api-version: '26.1.2'
 load: POSTWORLD
 softdepend: [Multiverse-Core]
 
+commands:
+  lzbr:
+    usage: /<command> <join | start>
+    alias: [lz]
+
 authors: [ Glatinis ]
