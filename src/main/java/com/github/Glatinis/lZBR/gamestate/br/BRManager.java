@@ -15,7 +15,19 @@ public class BRManager {
     }
 
     public void startPreGame(List<Player> participatingPlayers) {
-        players = participatingPlayers.stream().toList();
+        players = new ArrayList<>(participatingPlayers);
         brService.startPreGame(players);
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public void removePlayer(Player player) {
+        players.remove(player);
+    }
+
+    public void reset() {
+        players.clear();
     }
 }

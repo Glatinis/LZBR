@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class GameStateController {
     private GameState gameState = GameState.LOBBY;
@@ -66,5 +65,16 @@ public class GameStateController {
 
         lobbyManager.removeLobbyPlayer(player.getUniqueId());
         return LeaveCode.SUCCESS;
+    }
+
+    public void handlePlayerQuit(Player player) {
+        if (gameState == GameState.LOBBY) {
+            lobbyManager.removeLobbyPlayer(player.getUniqueId());
+            return;
+        }
+
+        if (gameState == GameState.PRE_GAME || gameState == GameState.IN_GAME) {
+            brManager.removePlayer(player);
+        }
     }
 }
