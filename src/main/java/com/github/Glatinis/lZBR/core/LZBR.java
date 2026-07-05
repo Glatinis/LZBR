@@ -5,6 +5,7 @@ import com.github.Glatinis.lZBR.gamestate.GameStateController;
 import com.github.Glatinis.lZBR.gamestate.br.BRManager;
 import com.github.Glatinis.lZBR.gamestate.br.BRService;
 import com.github.Glatinis.lZBR.gamestate.lobby.LobbyManager;
+import com.github.Glatinis.lZBR.gamestate.listeners.PlayerBRListener;
 import com.github.Glatinis.lZBR.gamestate.listeners.PlayerQuitListener;
 import com.github.Glatinis.lZBR.world.WorldController;
 import io.papermc.paper.command.brigadier.Commands;
@@ -44,6 +45,7 @@ public final class LZBR extends JavaPlugin {
         });
 
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(gameStateController), this);
+        getServer().getPluginManager().registerEvents(new PlayerBRListener(gameStateController, this), this);
 
         if (getServer().getPluginManager().getPlugin("Multiverse-Core") == null) {
             getLogger().severe("Multiverse-Core is not installed! World switching will not work until it's added.");

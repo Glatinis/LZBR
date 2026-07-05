@@ -3,10 +3,14 @@ package com.github.Glatinis.lZBR.gamestate.br;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public class BRManager {
     private List<Player> players = new ArrayList<>();
+    private Set<UUID> spectators = new HashSet<>();
 
     private BRService brService;
 
@@ -27,7 +31,17 @@ public class BRManager {
         players.remove(player);
     }
 
+    public void eliminatePlayer(Player player) {
+        players.remove(player);
+        spectators.add(player.getUniqueId());
+    }
+
+    public boolean isSpectator(UUID uuid) {
+        return spectators.contains(uuid);
+    }
+
     public void reset() {
         players.clear();
+        spectators.clear();
     }
 }

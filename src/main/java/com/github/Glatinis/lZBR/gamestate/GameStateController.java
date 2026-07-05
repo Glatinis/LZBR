@@ -77,4 +77,14 @@ public class GameStateController {
             brManager.removePlayer(player);
         }
     }
+
+    public void handlePlayerDeath(Player player) {
+        if (gameState == GameState.PRE_GAME || gameState == GameState.IN_GAME) {
+            brManager.eliminatePlayer(player);
+        }
+    }
+
+    public boolean isSpectatorInBR(Player player) {
+        return brManager.isSpectator(player.getUniqueId());
+    }
 }
