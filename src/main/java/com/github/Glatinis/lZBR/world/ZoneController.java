@@ -2,6 +2,7 @@ package com.github.Glatinis.lZBR.world;
 
 import com.github.Glatinis.lZBR.core.ConfigRepository;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -18,6 +19,12 @@ public class ZoneController {
     private BukkitTask shrinkStartTask;
     private BukkitTask damageTask;
 
+    private double centerX;
+    private double centerZ;
+    private double initialRadius;
+    private double finalRadius;
+    private long shrinkDurationMs;
+
     private long shrinkStartTime = -1;
     private boolean shrinking = false;
     private boolean active = false;
@@ -29,29 +36,46 @@ public class ZoneController {
     }
 
     public void start(List<Player> participants, Supplier<List<Player>> activePlayers) {
+        start(participants, activePlayers,
+                config.getZoneCenterX(), config.getZoneCenterZ(),
+                config.getZoneInitialRadius(), config.getZoneFinalRadius(),
+                config.getZoneShrinkDelay(), config.getZoneShrinkDuration());
+    }
+
+    // Starts a small, fast-shrinking zone centered on a single player, for testing the zone feature without a full match.
+    public void startTest(Player player, double initialRadius, double finalRadius, int shrinkDelaySeconds, int shrinkDurationSeconds) {
+        Location loc = player.getLocation();
+        start(List.of(player), () -> List.of(player),
+                loc.getX(), loc.getZ(),
+                initialRadius, finalRadius,
+                shrinkDelaySeconds, shrinkDurationSeconds);
+    }
+
+    private void start(List<Player> participants, Supplier<List<Player>> activePlayers,
+                        double centerX, double centerZ,
+                        double initialRadius, double finalRadius,
+                        int shrinkDelaySeconds, int shrinkDurationSeconds) {
         this.activePlayers = activePlayers;
+        this.centerX = centerX;
+        this.centerZ = centerZ;
+        this.initialRadius = initialRadius;
+        this.finalRadius = finalRadius;
+        this.shrinkDurationMs = (long) shrinkDurationSeconds * 1000L;
         active = true;
         shrinking = false;
         shrinkStartTime = -1;
 
         if (border != null) {
-            double initialRadius = config.getZoneInitialRadius();
-            participants.forEach(p -> border.sendStatic(p, initialRadius));
+            participants.forEach(p -> border.sendStatic(p, centerX, centerZ, initialRadius));
         }
 
-        long delayTicks = (long) config.getZoneShrinkDelay() * 20L;
+        long delayTicks = (long) shrinkDelaySeconds * 20L;
         shrinkStartTask = plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             shrinkStartTime = System.currentTimeMillis();
             shrinking = true;
 
             if (border != null) {
-                long durationMs = (long) config.getZoneShrinkDuration() * 1000L;
-                border.broadcastLerp(
-                        activePlayers.get(),
-                        config.getZoneInitialRadius(),
-                        config.getZoneFinalRadius(),
-                        durationMs
-                );
+                border.broadcastLerp(activePlayers.get(), centerX, centerZ, initialRadius, finalRadius, shrinkDurationMs);
             }
         }, delayTicks);
 
@@ -59,8 +83,7 @@ public class ZoneController {
         damageTask = new ZoneDamageTask(
                 activePlayers,
                 this::getCurrentRadius,
-                config.getZoneCenterX(),
-                config.getZoneCenterZ(),
+                centerX, centerZ,
                 config.getZoneDamageAmount()
         ).runTaskTimer(plugin, intervalTicks, intervalTicks);
     }
@@ -84,22 +107,18 @@ public class ZoneController {
         if (border == null || !active) return;
         if (shrinking) {
             long elapsed = System.currentTimeMillis() - shrinkStartTime;
-            long durationMs = (long) config.getZoneShrinkDuration() * 1000L;
-            long remaining = Math.max(0L, durationMs - elapsed);
-            border.sendMidShrink(player, getCurrentRadius(), config.getZoneFinalRadius(), remaining);
+            long remaining = Math.max(0L, shrinkDurationMs - elapsed);
+            border.sendMidShrink(player, centerX, centerZ, getCurrentRadius(), finalRadius, remaining);
         } else {
-            border.sendStatic(player, config.getZoneInitialRadius());
+            border.sendStatic(player, centerX, centerZ, initialRadius);
         }
     }
 
     public double getCurrentRadius() {
-        if (!shrinking || shrinkStartTime < 0) return config.getZoneInitialRadius();
+        if (!shrinking || shrinkStartTime < 0) return initialRadius;
         long elapsed = System.currentTimeMillis() - shrinkStartTime;
-        long durationMs = (long) config.getZoneShrinkDuration() * 1000L;
-        double progress = Math.min(1.0, (double) elapsed / durationMs);
-        double initial = config.getZoneInitialRadius();
-        double finalR = config.getZoneFinalRadius();
-        return initial - (initial - finalR) * progress;
+        double progress = Math.min(1.0, (double) elapsed / shrinkDurationMs);
+        return initialRadius - (initialRadius - finalRadius) * progress;
     }
 
     public boolean isActive() {

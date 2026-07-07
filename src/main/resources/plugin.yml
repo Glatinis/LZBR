@@ -9,7 +9,7 @@ softdepend: [Multiverse-Core, packetevents]
 
 commands:
   lzbr:
-    usage: /<command> <join | start>
+    usage: /<command> <join | start | leave | zonetest>
     alias: [lz]
 
 authors: [ Glatinis ]

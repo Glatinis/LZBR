@@ -35,6 +35,13 @@ public class LZBRCommand {
                 .then(Commands.literal("leave")
                         .requires(source -> source.getSender() instanceof Player)
                         .executes(this::executeLeave))
+                .then(Commands.literal("zonetest")
+                        .requires(source -> source.getSender().hasPermission("lzbr.admin")
+                                && source.getSender() instanceof Player)
+                        .executes(this::executeZoneTestStart)
+                        .then(Commands.literal("stop")
+                                .requires(source -> source.getSender().hasPermission("lzbr.admin"))
+                                .executes(this::executeZoneTestStop)))
                 .build();
     }
 
@@ -103,6 +110,31 @@ public class LZBRCommand {
             plr.sendMessage(Component.text("You have left the lobby queue.")
                     .color(NamedTextColor.GREEN));
         }
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private int executeZoneTestStart(CommandContext<CommandSourceStack> ctx) {
+        Player plr = (Player) ctx.getSource().getSender();
+
+        boolean started = gameStateController.startZoneTest(plr);
+
+        if (started) {
+            plr.sendMessage(Component.text("Test zone created around you — it will start shrinking in 5 seconds.")
+                    .color(NamedTextColor.GREEN));
+        } else {
+            plr.sendMessage(Component.text("A zone is already active. Stop it first with /lzbr zonetest stop.")
+                    .color(NamedTextColor.RED));
+        }
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private int executeZoneTestStop(CommandContext<CommandSourceStack> ctx) {
+        CommandSender sender = ctx.getSource().getSender();
+
+        gameStateController.stopZone();
+        sender.sendMessage(Component.text("Zone stopped.").color(NamedTextColor.GREEN));
 
         return Command.SINGLE_SUCCESS;
     }

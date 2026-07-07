@@ -99,4 +99,14 @@ public class GameStateController {
     public void stopZone() {
         zoneController.stop();
     }
+
+    // Starts a small test zone centered on the player, for trying out the zone feature outside of a real match.
+    // Refuses if a zone (real match or another test) is already running, since only one can be active at a time.
+    public boolean startZoneTest(Player player) {
+        if (zoneController.isActive())
+            return false;
+
+        zoneController.startTest(player, 15.0, 3.0, 5, 15);
+        return true;
+    }
 }
