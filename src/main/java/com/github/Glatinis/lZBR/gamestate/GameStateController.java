@@ -5,12 +5,17 @@ import com.github.Glatinis.lZBR.gamestate.lobby.LobbyManager;
 import com.github.Glatinis.lZBR.returncode.JoinCode;
 import com.github.Glatinis.lZBR.returncode.LeaveCode;
 import com.github.Glatinis.lZBR.returncode.StartCode;
+import com.github.Glatinis.lZBR.world.WorldController;
+import com.github.Glatinis.lZBR.world.arena.ArenaResetService;
 import com.github.Glatinis.lZBR.world.zone.ZoneController;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class GameStateController {
     private GameState gameState = GameState.LOBBY;
@@ -18,11 +23,16 @@ public class GameStateController {
     private LobbyManager lobbyManager;
     private BRManager brManager;
     private ZoneController zoneController;
+    private WorldController worldController;
+    private ArenaResetService arenaResetService;
 
-    public GameStateController(LobbyManager lobbyManager, BRManager brManager, ZoneController zoneController) {
+    public GameStateController(LobbyManager lobbyManager, BRManager brManager, ZoneController zoneController,
+                              WorldController worldController, ArenaResetService arenaResetService) {
         this.lobbyManager = lobbyManager;
         this.brManager = brManager;
         this.zoneController = zoneController;
+        this.worldController = worldController;
+        this.arenaResetService = arenaResetService;
     }
 
     public GameState getGameState() {
@@ -98,6 +108,42 @@ public class GameStateController {
 
     public void stopZone() {
         zoneController.stop();
+    }
+
+    // Ends the current match: stops the zone, sends everyone back to the lobby, and resets the arena
+    // (pasting a fresh schematic) before returning to the LOBBY state so the next round starts clean.
+    // Returns false if no match is in progress.
+    public boolean endGame() {
+        if (gameState == GameState.LOBBY)
+            return false;
+
+        gameState = GameState.POST_GAME;
+        zoneController.stop();
+        returnPlayersToLobby();
+
+        arenaResetService.reset(success -> {
+            brManager.reset();
+            gameState = GameState.LOBBY;
+        });
+        return true;
+    }
+
+    // Manually triggers an arena reset (admin/testing). Does not touch match state.
+    public void resetArena(Consumer<Boolean> onComplete) {
+        arenaResetService.reset(onComplete);
+    }
+
+    private void returnPlayersToLobby() {
+        List<Player> matchPlayers = new ArrayList<>(brManager.getPlayers());
+        brManager.getSpectators().stream()
+                .map(Bukkit::getPlayer)
+                .filter(Objects::nonNull)
+                .forEach(matchPlayers::add);
+
+        for (Player player : matchPlayers) {
+            player.setGameMode(GameMode.SURVIVAL);
+            worldController.teleportToLobby(player);
+        }
     }
 
     // Starts a small test zone centered on the player, for trying out the zone feature outside of a real match.

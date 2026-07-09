@@ -1,17 +1,59 @@
-minimum-player-count: 2
-maximum-player-count: 25
+# ============================================================================
+#  LZBR — LiveZone Battle Royale
+# ----------------------------------------------------------------------------
+#  Times are in seconds unless a key says otherwise; tick-based values say so.
+# ============================================================================
 
-lobby-world-name: lobby
-br-world-name: br
+# Player limits for a match.
+players:
+  minimum: 2
+  maximum: 25
 
+# Worlds, by their Multiverse-Core names.
+worlds:
+  lobby: lobby
+  br: br
+
+# The shrinking play zone.
 zone:
-  center-x: 0
-  center-z: 0
-  initial-radius: 500
-  final-radius: 50
-  shrink-delay: 60
-  shrink-duration: 300
-  damage-amount: 1.0
-  damage-interval: 20
-  warning-distance: 5
-  warning-time: 10
+  # Center of the zone, in BR-world coordinates.
+  center:
+    x: 0
+    z: 0
+  # Zone radius in blocks, at the start and end of the shrink.
+  radius:
+    initial: 500
+    final: 50
+  # When and how long the zone takes to shrink.
+  shrink:
+    delay-seconds: 60        # wait this long after the match starts before shrinking
+    duration-seconds: 300    # shrink from initial to final radius over this long
+  # Damage dealt to players the zone has swept outside.
+  damage:
+    amount: 1.0              # damage per interval (2.0 = one heart)
+    interval-ticks: 20       # ticks between damage applications (20 ticks = 1s)
+  # Border wall warning (the client's red screen tint near the edge).
+  warning:
+    distance-blocks: 5
+    time-seconds: 10
+
+# Arena reset between rounds.
+#
+# Pastes a schematic over the BR world so each round starts from a clean arena,
+# without regenerating the whole world. Requires FastAsyncWorldEdit (async paste).
+arena:
+  reset:
+    enabled: true
+    # Schematic file to paste, located in plugins/LZBR/schematics/
+    schematic: arena.schem
+    # BR-world coordinates the schematic's origin is pasted at.
+    origin:
+      x: 0
+      y: 64
+      z: 0
+    # Paste air blocks from the schematic too — true fully overwrites the area,
+    # clearing anything players built; false leaves existing blocks where the
+    # schematic has air.
+    paste-air: true
+    # Also restore entities saved in the schematic (item frames, armor stands, …).
+    paste-entities: false

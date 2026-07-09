@@ -8,6 +8,7 @@ import com.github.Glatinis.lZBR.gamestate.lobby.LobbyManager;
 import com.github.Glatinis.lZBR.gamestate.listeners.PlayerBRListener;
 import com.github.Glatinis.lZBR.gamestate.listeners.PlayerQuitListener;
 import com.github.Glatinis.lZBR.world.WorldController;
+import com.github.Glatinis.lZBR.world.arena.ArenaResetService;
 import com.github.Glatinis.lZBR.world.zone.ZoneBorder;
 import com.github.Glatinis.lZBR.world.zone.ZoneController;
 import io.papermc.paper.command.brigadier.Commands;
@@ -40,7 +41,10 @@ public final class LZBR extends JavaPlugin {
         brService = new BRService(worldController);
         brManager = new BRManager(brService);
 
-        gameStateController = new GameStateController(lobbyManager, brManager, zoneController);
+        ArenaResetService arenaResetService = new ArenaResetService(this, configRepository);
+
+        gameStateController = new GameStateController(lobbyManager, brManager, zoneController,
+                worldController, arenaResetService);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();

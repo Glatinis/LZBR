@@ -14,32 +14,48 @@ public class ConfigRepository {
         return plugin.getConfig();
     }
 
+    // --- Players -------------------------------------------------------------
+
     public int getMinimumPlayerCount() {
-        return config().getInt("minimum-player-count");
+        return config().getInt("players.minimum");
     }
 
     public int getMaximumPlayerCount() {
-        return config().getInt("maximum-player-count");
+        return config().getInt("players.maximum");
     }
 
+    // --- Worlds --------------------------------------------------------------
+
     public String getLobbyWorldName() {
-        return config().getString("lobby-world-name");
+        return config().getString("worlds.lobby");
     }
 
     public String getBrWorldName() {
-        return config().getString("br-world-name");
+        return config().getString("worlds.br");
     }
 
-    public double getZoneCenterX() { return config().getDouble("zone.center-x"); }
-    public double getZoneCenterZ() { return config().getDouble("zone.center-z"); }
-    public double getZoneInitialRadius() { return config().getDouble("zone.initial-radius"); }
-    public double getZoneFinalRadius() { return config().getDouble("zone.final-radius"); }
-    public int getZoneShrinkDelay() { return config().getInt("zone.shrink-delay"); }
-    public int getZoneShrinkDuration() { return config().getInt("zone.shrink-duration"); }
-    public double getZoneDamageAmount() { return config().getDouble("zone.damage-amount"); }
-    public int getZoneDamageInterval() { return config().getInt("zone.damage-interval"); }
-    public int getZoneWarningDistance() { return config().getInt("zone.warning-distance"); }
-    public int getZoneWarningTime() { return config().getInt("zone.warning-time"); }
+    // --- Zone ----------------------------------------------------------------
+
+    public double getZoneCenterX() { return config().getDouble("zone.center.x"); }
+    public double getZoneCenterZ() { return config().getDouble("zone.center.z"); }
+    public double getZoneInitialRadius() { return config().getDouble("zone.radius.initial"); }
+    public double getZoneFinalRadius() { return config().getDouble("zone.radius.final"); }
+    public int getZoneShrinkDelay() { return config().getInt("zone.shrink.delay-seconds"); }
+    public int getZoneShrinkDuration() { return config().getInt("zone.shrink.duration-seconds"); }
+    public double getZoneDamageAmount() { return config().getDouble("zone.damage.amount"); }
+    public int getZoneDamageInterval() { return config().getInt("zone.damage.interval-ticks"); }
+    public int getZoneWarningDistance() { return config().getInt("zone.warning.distance-blocks"); }
+    public int getZoneWarningTime() { return config().getInt("zone.warning.time-seconds"); }
+
+    // --- Arena reset ---------------------------------------------------------
+
+    public boolean isArenaResetEnabled() { return config().getBoolean("arena.reset.enabled", true); }
+    public String getArenaSchematic() { return config().getString("arena.reset.schematic", "arena.schem"); }
+    public int getArenaOriginX() { return config().getInt("arena.reset.origin.x"); }
+    public int getArenaOriginY() { return config().getInt("arena.reset.origin.y"); }
+    public int getArenaOriginZ() { return config().getInt("arena.reset.origin.z"); }
+    public boolean isArenaPasteAir() { return config().getBoolean("arena.reset.paste-air", true); }
+    public boolean isArenaPasteEntities() { return config().getBoolean("arena.reset.paste-entities", false); }
 
     public void reload() {
         plugin.reloadConfig();

@@ -5,11 +5,11 @@ version: '${version}'
 main: com.github.Glatinis.lZBR.core.LZBR
 api-version: '26.1.2'
 load: POSTWORLD
-softdepend: [Multiverse-Core]
+softdepend: [Multiverse-Core, FastAsyncWorldEdit]
 
 commands:
   lzbr:
-    usage: /<command> <join | start | leave | zonetest>
+    usage: /<command> <join | start | leave | end | arena | zonetest>
     alias: [lz]
 
 authors: [ Glatinis ]

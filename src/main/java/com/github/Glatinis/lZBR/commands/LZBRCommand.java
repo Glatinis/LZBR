@@ -35,6 +35,13 @@ public class LZBRCommand {
                 .then(Commands.literal("leave")
                         .requires(source -> source.getSender() instanceof Player)
                         .executes(this::executeLeave))
+                .then(Commands.literal("end")
+                        .requires(source -> source.getSender().hasPermission("lzbr.admin"))
+                        .executes(this::executeEnd))
+                .then(Commands.literal("arena")
+                        .requires(source -> source.getSender().hasPermission("lzbr.admin"))
+                        .then(Commands.literal("reset")
+                                .executes(this::executeArenaReset)))
                 .then(Commands.literal("zonetest")
                         .requires(source -> source.getSender().hasPermission("lzbr.admin")
                                 && source.getSender() instanceof Player)
@@ -110,6 +117,39 @@ public class LZBRCommand {
             plr.sendMessage(Component.text("You have left the lobby queue.")
                     .color(NamedTextColor.GREEN));
         }
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private int executeEnd(CommandContext<CommandSourceStack> ctx) {
+        CommandSender sender = ctx.getSource().getSender();
+
+        boolean ended = gameStateController.endGame();
+
+        if (ended) {
+            sender.sendMessage(Component.text("Match ended — resetting the arena for the next round...")
+                    .color(NamedTextColor.GREEN));
+        } else {
+            sender.sendMessage(Component.text("There is no match in progress.")
+                    .color(NamedTextColor.YELLOW));
+        }
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private int executeArenaReset(CommandContext<CommandSourceStack> ctx) {
+        CommandSender sender = ctx.getSource().getSender();
+
+        sender.sendMessage(Component.text("Resetting the arena...").color(NamedTextColor.GRAY));
+        gameStateController.resetArena(success -> {
+            if (success) {
+                sender.sendMessage(Component.text("Arena reset complete.").color(NamedTextColor.GREEN));
+            } else {
+                sender.sendMessage(Component.text("Arena reset failed — check the console "
+                        + "(FastAsyncWorldEdit installed? schematic present? reset enabled?).")
+                        .color(NamedTextColor.RED));
+            }
+        });
 
         return Command.SINGLE_SUCCESS;
     }

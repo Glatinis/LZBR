@@ -40,6 +40,10 @@ public class BRManager {
         return spectators.contains(uuid);
     }
 
+    public Set<UUID> getSpectators() {
+        return new HashSet<>(spectators);
+    }
+
     public void reset() {
         players.clear();
         spectators.clear();

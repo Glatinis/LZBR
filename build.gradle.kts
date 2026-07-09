@@ -8,12 +8,18 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.onarandombox.com/content/groups/public/")
     maven("https://repo.codemc.io/repository/maven-releases/")
+    maven("https://maven.enginehub.org/repo/")
 
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
     compileOnly("org.mvplugins.multiverse.core:multiverse-core:5.7.1")
+
+    // WorldEdit API — FastAsyncWorldEdit implements this same API and provides the async paste at
+    // runtime, so we compile against WorldEdit and require FAWE on the server (see ArenaResetService).
+    compileOnly("com.sk89q.worldedit:worldedit-core:7.3.0")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.0") { isTransitive = false }
 }
 
 java {
