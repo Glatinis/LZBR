@@ -12,10 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-// Runs the pre-game countdown: shows a center-screen "starting in N" title (and plays a tick sound) to
-// the audience every second, then fires onComplete when it hits zero.
 public class MatchCountdown {
-    // The number stays on screen just past one second so consecutive numbers replace each other cleanly.
+    // Stay time is slightly over one second so consecutive numbers replace each other cleanly.
     private static final int FADE_IN_TICKS = 0;
     private static final int STAY_TICKS = 22;
     private static final int FADE_OUT_TICKS = 4;
@@ -30,7 +28,6 @@ public class MatchCountdown {
         this.config = config;
     }
 
-    // Counts down for `audience`, then runs onComplete. Cancels any countdown already in progress.
     public void start(Supplier<List<Player>> audience, Runnable onComplete) {
         cancel();
 

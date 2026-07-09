@@ -11,7 +11,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.command.CommandSender;
 
-// /lzbr start — begins a match.
 public class StartCommand implements SubCommand {
     private final GameStateController gameState;
     private final WorldController worldController;

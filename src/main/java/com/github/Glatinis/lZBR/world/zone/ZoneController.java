@@ -10,9 +10,6 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.List;
 import java.util.function.Supplier;
 
-// Drives the shrinking zone: reveals the border, schedules the shrink after a delay, and runs the
-// damage task that hurts players the border has swept outside. The border is a hard wall players
-// cannot cross, so they only end up outside when the shrink passes over them.
 public class ZoneController {
     private static final long TICKS_PER_SECOND = 20L;
 
@@ -50,7 +47,6 @@ public class ZoneController {
                 config.getZoneShrinkDelay(), config.getZoneShrinkDuration());
     }
 
-    // Starts a small, fast-shrinking zone centered on a single player, for testing without a full match.
     public void startTest(Player player, double initialRadius, double finalRadius, int shrinkDelaySeconds, int shrinkDurationSeconds) {
         Location loc = player.getLocation();
         start(List.of(player), () -> List.of(player),
@@ -94,11 +90,10 @@ public class ZoneController {
         ).runTaskTimer(plugin, intervalTicks, intervalTicks);
     }
 
-    // Schedules the pre-shrink telegraph to fire leadSeconds before the shrink begins (clamped so it
-    // never fires before the match starts).
     private void scheduleTelegraph(int shrinkDelaySeconds) {
         if (!telegraph.isEnabled() || telegraph.getLeadSeconds() <= 0) return;
 
+        // Clamp so a lead-seconds longer than the shrink delay doesn't fire before the match starts.
         int lead = Math.min(telegraph.getLeadSeconds(), shrinkDelaySeconds);
         long warnTicks = (long) (shrinkDelaySeconds - lead) * TICKS_PER_SECOND;
         telegraphTask = plugin.getServer().getScheduler().runTaskLater(plugin,
@@ -119,14 +114,11 @@ public class ZoneController {
         border.dispose();
     }
 
-    // Shows the current border to a player entering the arena mid-game. The shared border carries its
-    // own shrink animation, so a mid-shrink arrival picks it up.
     public void sendBorderTo(Player player) {
         if (!active) return;
         border.show(player);
     }
 
-    // Current radius, interpolated over the shrink for the damage check.
     public double getCurrentRadius() {
         if (!shrinking || shrinkStartTime < 0) return initialRadius;
         long elapsed = System.currentTimeMillis() - shrinkStartTime;

@@ -5,8 +5,8 @@ import net.kyori.adventure.sound.Sound;
 
 import java.util.logging.Logger;
 
-// Builds Adventure sounds from configured values. Returns null (meaning "play nothing") for a blank
-// key, and logs — rather than throws — for a malformed key so a bad config never breaks the flow.
+// Returns null (callers treat null as "play nothing") for a blank key, and logs rather than throws
+// for a malformed one, so a bad config value never breaks the flow.
 public final class Sounds {
     private Sounds() {}
 

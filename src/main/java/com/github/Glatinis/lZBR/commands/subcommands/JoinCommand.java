@@ -11,7 +11,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.entity.Player;
 
-// /lzbr join — adds the player to the lobby queue.
 public class JoinCommand implements SubCommand {
     private final GameStateController gameState;
 

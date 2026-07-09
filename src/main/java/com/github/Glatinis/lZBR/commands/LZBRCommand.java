@@ -15,7 +15,6 @@ import io.papermc.paper.command.brigadier.Commands;
 
 import java.util.List;
 
-// Root /lzbr command. Owns nothing but the list of sub-commands and grafts each one onto the root.
 public class LZBRCommand {
     private final List<SubCommand> subCommands;
 

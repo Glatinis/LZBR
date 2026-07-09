@@ -22,12 +22,9 @@ import java.io.InputStream;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
-// Resets the BR arena between rounds by pasting a schematic over it, avoiding a full world
-// regeneration. Uses the WorldEdit API, which FastAsyncWorldEdit implements — with FAWE installed the
-// paste runs asynchronously off the main thread, so a large arena rebuilds without freezing the server.
-//
-// FAWE is required: without it the paste would run on the main thread (unsafe for large edits), so the
-// feature disables itself and logs a warning instead.
+// Resets the BR arena between rounds by pasting a schematic over it. Requires FastAsyncWorldEdit
+// (WorldEdit's synchronous paste would block the main thread on a large arena); if it's absent, the
+// feature disables itself and logs a warning rather than pasting unsafely.
 public class ArenaResetService {
     private static final String FAWE_PLUGIN = "FastAsyncWorldEdit";
     private static final String SCHEMATIC_DIR = "schematics";
@@ -41,7 +38,6 @@ public class ArenaResetService {
         this.config = config;
         this.faweInstalled = plugin.getServer().getPluginManager().getPlugin(FAWE_PLUGIN) != null;
 
-        // Make sure the folder players drop schematics into exists.
         new File(plugin.getDataFolder(), SCHEMATIC_DIR).mkdirs();
 
         if (!faweInstalled) {
@@ -49,7 +45,6 @@ public class ArenaResetService {
         }
     }
 
-    // Whether a reset can actually run (FAWE present and the feature enabled in config).
     public boolean isAvailable() {
         return faweInstalled && config.isArenaResetEnabled();
     }

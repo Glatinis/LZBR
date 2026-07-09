@@ -10,8 +10,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-// Owns the match roster: who is still alive and who has been eliminated (spectators). Delegates the
-// actual teleport/state changes to BRService.
+// Owns the match roster (alive players / eliminated spectators); BRService handles the actual
+// teleport and state changes.
 public class BRManager {
     private final BRService brService;
 
@@ -28,7 +28,6 @@ public class BRManager {
         spectators.clear();
     }
 
-    // Teleports the current roster into the arena — called once the lobby countdown finishes.
     public void sendToArena() {
         brService.sendToArena(alivePlayers);
     }
@@ -37,7 +36,6 @@ public class BRManager {
         return alivePlayers;
     }
 
-    // Alive players plus any still-online spectators — everyone involved in the match.
     public List<Player> getAllParticipants() {
         List<Player> everyone = new ArrayList<>(alivePlayers);
         spectators.stream()
@@ -47,13 +45,12 @@ public class BRManager {
         return everyone;
     }
 
-    // Removes a player from the match entirely (e.g. they quit) without making them a spectator.
+    // Unlike eliminatePlayer, does not add them to spectators (e.g. they quit rather than died).
     public void removePlayer(Player player) {
         alivePlayers.remove(player);
         spectators.remove(player.getUniqueId());
     }
 
-    // Marks a player as eliminated: out of the running, now a spectator.
     public void eliminatePlayer(Player player) {
         alivePlayers.remove(player);
         spectators.add(player.getUniqueId());
@@ -63,7 +60,6 @@ public class BRManager {
         return spectators.contains(uuid);
     }
 
-    // Sends every remaining participant back to the lobby with a clean state.
     public void returnAllToLobby() {
         brService.returnToLobby(getAllParticipants());
     }

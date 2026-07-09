@@ -10,7 +10,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.command.CommandSender;
 
-// /lzbr end — ends the current match and resets the arena.
 public class EndCommand implements SubCommand {
     private final GameStateController gameState;
 

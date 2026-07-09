@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Logger;
 
-// Sends the one-off match banners: the "GO!" at the start and the victory screen at the end.
 public class MatchAnnouncer {
     private final ConfigRepository config;
     private final Logger logger;

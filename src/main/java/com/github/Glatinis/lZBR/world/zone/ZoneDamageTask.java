@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-// Periodically damages every active player standing outside the current zone radius.
 public class ZoneDamageTask extends BukkitRunnable {
     private final Supplier<List<Player>> activePlayers;
     private final DoubleSupplier currentRadius;

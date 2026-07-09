@@ -10,7 +10,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.command.CommandSender;
 
-// /lzbr arena reset — manually re-pastes the arena schematic (admin/testing).
 public class ArenaCommand implements SubCommand {
     private final GameStateController gameState;
 

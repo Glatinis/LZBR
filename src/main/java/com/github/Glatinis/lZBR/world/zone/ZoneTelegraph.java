@@ -9,8 +9,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Logger;
 
-// Telegraphs an imminent zone shrink: shows a center-screen title (and subtitle) and plays a sound to
-// every active player, a configurable number of seconds before the shrink actually begins.
 public class ZoneTelegraph {
     private final ConfigRepository config;
     private final Logger logger;
@@ -28,7 +26,7 @@ public class ZoneTelegraph {
         return config.getZoneShrinkTelegraphLead();
     }
 
-    // Shows the telegraph to the given players. secondsUntilShrink fills the {seconds} placeholder.
+    // secondsUntilShrink fills the {seconds} placeholder in the configured title/subtitle.
     public void announce(Collection<? extends Player> players, int secondsUntilShrink) {
         if (!isEnabled()) return;
         buildAnnouncement().showAll(players, Map.of("seconds", String.valueOf(secondsUntilShrink)));

@@ -8,9 +8,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Map;
 
-// An immutable, reusable center-screen announcement: a MiniMessage title + subtitle (with placeholder
-// substitution), display timing, and an optional sound. Built once from config, then shown to any set
-// of players with per-show placeholder values.
+// Built once from config; shown to any set of players with per-show placeholder values.
 public final class Announcement {
     private final String titleTemplate;
     private final String subtitleTemplate;
@@ -48,7 +46,6 @@ public final class Announcement {
                 times);
     }
 
-    // Convenience for building Title.Times from tick counts.
     public static Title.Times times(int fadeInTicks, int stayTicks, int fadeOutTicks) {
         return Title.Times.times(ticks(fadeInTicks), ticks(stayTicks), ticks(fadeOutTicks));
     }

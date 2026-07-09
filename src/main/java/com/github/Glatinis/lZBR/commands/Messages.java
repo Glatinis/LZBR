@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 
-// Small helpers for colour-coded command feedback, so sub-commands read as one line each.
 public final class Messages {
     private Messages() {}
 

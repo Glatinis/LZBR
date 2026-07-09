@@ -18,9 +18,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-// Coordinates the whole game lifecycle: lobby queue -> countdown -> live match -> win/end -> reset.
-// It owns the GameState and sequences the collaborators (lobby, roster, zone, countdown, announcer,
-// arena reset); each of those owns its own slice of the work.
 public class GameStateController {
     private static final long TICKS_PER_SECOND = 20L;
 
@@ -90,8 +87,7 @@ public class GameStateController {
         lobbyManager.clear();
         brManager.prepareMatch(participants);
 
-        // Count down in the lobby, then go live. The roster supplier keeps the audience current if
-        // players drop out during the countdown.
+        // brManager::getPlayers is a live supplier, so the countdown audience stays current if players drop out.
         countdown.start(brManager::getPlayers, this::beginMatch);
         return StartCode.SUCCESS;
     }
@@ -110,7 +106,6 @@ public class GameStateController {
         zoneController.start(players, brManager::getPlayers);
     }
 
-    // Admin-triggered early end. Returns false if there is no match to end.
     public boolean endGame() {
         if (gameState != GameState.PRE_GAME && gameState != GameState.IN_GAME)
             return false;
@@ -128,8 +123,6 @@ public class GameStateController {
         }
     }
 
-    // Wraps up the match: freezes the zone, shows the win banner, then (after a delay) sends everyone
-    // to the lobby and resets the arena before returning to LOBBY.
     private void finishMatch(Player winner) {
         gameState = GameState.POST_GAME;
         countdown.cancel();
@@ -169,16 +162,15 @@ public class GameStateController {
     }
 
     public void handlePlayerDeath(Player player) {
-        // Only during the live match — deaths in the lobby during the countdown don't eliminate anyone.
+        // Deaths during the PRE_GAME countdown (still in the lobby) don't eliminate anyone.
         if (gameState == GameState.IN_GAME) {
             brManager.eliminatePlayer(player);
             checkForWinner();
         }
     }
 
-    // Whether a respawning player should be put into spectator mode: only while a match is actually
-    // running, so the post-game cleanup that respawns eliminated players doesn't re-lock them as
-    // spectators just before they are sent back to the lobby.
+    // Excludes POST_GAME so the win-screen cleanup, which force-respawns eliminated players before
+    // teleporting them to the lobby, doesn't re-lock them into spectator mode.
     public boolean shouldSpectateOnRespawn(Player player) {
         return (gameState == GameState.IN_GAME || gameState == GameState.PRE_GAME)
                 && brManager.isSpectator(player.getUniqueId());
@@ -194,13 +186,10 @@ public class GameStateController {
         zoneController.stop();
     }
 
-    // Manually triggers an arena reset (admin/testing). Does not touch match state.
     public void resetArena(Consumer<Boolean> onComplete) {
         arenaResetService.reset(onComplete);
     }
 
-    // Starts a small test zone centered on the player, for trying out the zone feature outside a match.
-    // Refuses if a zone (real match or another test) is already running, since only one can be active.
     public boolean startZoneTest(Player player) {
         if (zoneController.isActive())
             return false;

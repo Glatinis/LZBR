@@ -11,7 +11,6 @@ import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-// /lzbr zonetest [stop] — spins up (or stops) a small test zone around the player.
 public class ZoneTestCommand implements SubCommand {
     private final GameStateController gameState;
 

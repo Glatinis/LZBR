@@ -10,8 +10,6 @@ import org.bukkit.potion.PotionEffect;
 import java.util.ArrayList;
 import java.util.Collection;
 
-// Moves players between the lobby and the arena, giving each a clean slate on the way (full health,
-// fed, no effects, no fire, survival mode) so neither a match nor the lobby inherits leftover state.
 public class BRService {
     private final WorldController worldController;
 

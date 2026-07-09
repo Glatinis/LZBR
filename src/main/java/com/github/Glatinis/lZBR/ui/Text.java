@@ -5,8 +5,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import java.util.Map;
 
-// Renders MiniMessage templates into components, substituting {placeholder} tokens. Central place for
-// all MiniMessage parsing so the rest of the plugin never touches the serializer directly.
 public final class Text {
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
 

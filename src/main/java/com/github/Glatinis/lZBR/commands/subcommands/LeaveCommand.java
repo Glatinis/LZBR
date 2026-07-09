@@ -10,7 +10,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.entity.Player;
 
-// /lzbr leave — removes the player from the lobby queue.
 public class LeaveCommand implements SubCommand {
     private final GameStateController gameState;
 
