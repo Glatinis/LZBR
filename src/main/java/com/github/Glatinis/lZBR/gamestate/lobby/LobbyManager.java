@@ -33,4 +33,8 @@ public class LobbyManager {
     public boolean isFull() {
         return lobbyPlayers.size() >= configRepository.getMaximumPlayerCount();
     }
+
+    public void clear() {
+        lobbyPlayers.clear();
+    }
 }

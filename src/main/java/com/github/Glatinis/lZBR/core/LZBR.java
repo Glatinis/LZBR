@@ -43,8 +43,8 @@ public final class LZBR extends JavaPlugin {
 
         ArenaResetService arenaResetService = new ArenaResetService(this, configRepository);
 
-        gameStateController = new GameStateController(lobbyManager, brManager, zoneController,
-                worldController, arenaResetService);
+        gameStateController = new GameStateController(this, configRepository, lobbyManager, brManager,
+                zoneController, arenaResetService);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();

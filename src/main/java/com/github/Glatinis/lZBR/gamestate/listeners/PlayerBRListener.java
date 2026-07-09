@@ -28,7 +28,7 @@ public class PlayerBRListener implements Listener {
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        if (!gameStateController.isSpectatorInBR(player)) return;
+        if (!gameStateController.shouldSpectateOnRespawn(player)) return;
 
         // Delay by 1 tick so the respawn teleport completes before the gamemode is applied
         plugin.getServer().getScheduler().runTask(plugin, () -> player.setGameMode(GameMode.SPECTATOR));

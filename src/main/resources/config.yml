@@ -51,6 +51,45 @@ zone:
     distance-blocks: 5
     time-seconds: 10
 
+# Match flow — the countdown before the zone goes live, and the win screen.
+# All title/subtitle/broadcast fields use MiniMessage formatting.
+game:
+  # Center-screen countdown shown after an admin starts, before the match goes live.
+  # {seconds} is replaced with the number remaining.
+  countdown:
+    seconds: 10
+    title: "<yellow>Match starting</yellow>"
+    subtitle: "<red><bold>{seconds}</bold></red>"
+    sound:
+      key: "minecraft:block.note_block.hat"
+      volume: 1.0
+      pitch: 1.0
+  # Shown the moment the match goes live.
+  start:
+    title: "<green><bold>GO!</bold></green>"
+    subtitle: "<gray>Last player standing wins</gray>"
+    fade-in-ticks: 5
+    stay-ticks: 30
+    fade-out-ticks: 10
+    sound:
+      key: "minecraft:entity.ender_dragon.growl"
+      volume: 1.0
+      pitch: 1.0
+  # Shown when the match ends. {winner} is replaced with the winner's name.
+  win:
+    title: "<gold><bold>VICTORY</bold></gold>"
+    subtitle: "<yellow>{winner} won the match</yellow>"
+    broadcast: "<gold>{winner}</gold> <yellow>won the Battle Royale!</yellow>"
+    no-winner-broadcast: "<yellow>The match ended with no winner.</yellow>"
+    fade-in-ticks: 10
+    stay-ticks: 60
+    fade-out-ticks: 20
+    sound:
+      key: "minecraft:ui.toast.challenge_complete"
+      volume: 1.0
+      pitch: 1.0
+    return-delay-seconds: 5    # linger on the win screen before sending everyone to the lobby
+
 # Arena reset between rounds.
 #
 # Pastes a schematic over the BR world so each round starts from a clean arena,

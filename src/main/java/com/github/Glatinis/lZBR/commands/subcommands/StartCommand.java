@@ -3,7 +3,6 @@ package com.github.Glatinis.lZBR.commands.subcommands;
 import com.github.Glatinis.lZBR.commands.Messages;
 import com.github.Glatinis.lZBR.commands.SubCommand;
 import com.github.Glatinis.lZBR.gamestate.GameStateController;
-import com.github.Glatinis.lZBR.returncode.StartCode;
 import com.github.Glatinis.lZBR.world.WorldController;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -32,16 +31,15 @@ public class StartCommand implements SubCommand {
     private int execute(CommandContext<CommandSourceStack> ctx) {
         CommandSender sender = ctx.getSource().getSender();
 
-        StartCode started = gameState.startGame();
-
-        if (started == StartCode.GAME_IN_PROGRESS) {
-            Messages.error(sender, "The Battle Royale is already in progress.");
-        } else if (started == StartCode.PLAYER_COUNT_INSUFFICIENT) {
-            Messages.error(sender, "There are not enough players to start the match.");
-        } else if (!worldController.isMultiverseAvailable()) {
+        if (!worldController.isMultiverseAvailable()) {
             Messages.error(sender, "Multiverse-Core is not loaded... Cannot start the game without it.");
-        } else if (started == StartCode.SUCCESS) {
-            Messages.success(sender, "Battle Royale starting...");
+            return Command.SINGLE_SUCCESS;
+        }
+
+        switch (gameState.startGame()) {
+            case GAME_IN_PROGRESS -> Messages.error(sender, "The Battle Royale is already in progress.");
+            case PLAYER_COUNT_INSUFFICIENT -> Messages.error(sender, "There are not enough players to start the match.");
+            case SUCCESS -> Messages.success(sender, "Battle Royale starting...");
         }
 
         return Command.SINGLE_SUCCESS;
