@@ -88,9 +88,10 @@ public class GameStateController {
 
         gameState = GameState.PRE_GAME;
         lobbyManager.clear();
-        brManager.startMatch(participants);
+        brManager.prepareMatch(participants);
 
-        // Count down, then go live. The roster supplier keeps the audience current if players drop out.
+        // Count down in the lobby, then go live. The roster supplier keeps the audience current if
+        // players drop out during the countdown.
         countdown.start(brManager::getPlayers, this::beginMatch);
         return StartCode.SUCCESS;
     }
@@ -104,6 +105,7 @@ public class GameStateController {
             return;
         }
 
+        brManager.sendToArena();
         announcer.announceStart(players);
         zoneController.start(players, brManager::getPlayers);
     }
@@ -167,7 +169,8 @@ public class GameStateController {
     }
 
     public void handlePlayerDeath(Player player) {
-        if (gameState == GameState.PRE_GAME || gameState == GameState.IN_GAME) {
+        // Only during the live match — deaths in the lobby during the countdown don't eliminate anyone.
+        if (gameState == GameState.IN_GAME) {
             brManager.eliminatePlayer(player);
             checkForWinner();
         }

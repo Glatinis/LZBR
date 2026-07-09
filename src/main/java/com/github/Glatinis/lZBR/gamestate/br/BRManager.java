@@ -22,10 +22,14 @@ public class BRManager {
         this.brService = brService;
     }
 
-    // Sets the roster for a fresh match and sends everyone into the arena.
-    public void startMatch(List<Player> participants) {
+    // Sets the roster for a fresh match. Players stay where they are (the lobby) until sendToArena().
+    public void prepareMatch(List<Player> participants) {
         alivePlayers = new ArrayList<>(participants);
         spectators.clear();
+    }
+
+    // Teleports the current roster into the arena — called once the lobby countdown finishes.
+    public void sendToArena() {
         brService.sendToArena(alivePlayers);
     }
 
