@@ -19,8 +19,10 @@ public class ZoneController {
     private final JavaPlugin plugin;
     private final ConfigRepository config;
     private final ZoneBorder border;
+    private final ZoneTelegraph telegraph;
 
     private Supplier<List<Player>> activePlayers;
+    private BukkitTask telegraphTask;
     private BukkitTask shrinkStartTask;
     private BukkitTask damageTask;
 
@@ -38,6 +40,7 @@ public class ZoneController {
         this.plugin = plugin;
         this.config = config;
         this.border = border;
+        this.telegraph = new ZoneTelegraph(config, plugin.getLogger());
     }
 
     public void start(List<Player> participants, Supplier<List<Player>> activePlayers) {
@@ -73,6 +76,8 @@ public class ZoneController {
         border.create(centerX, centerZ, initialRadius);
         border.showAll(participants);
 
+        scheduleTelegraph(shrinkDelaySeconds);
+
         long delayTicks = (long) shrinkDelaySeconds * TICKS_PER_SECOND;
         shrinkStartTask = plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             shrinkStartTime = System.currentTimeMillis();
@@ -89,12 +94,24 @@ public class ZoneController {
         ).runTaskTimer(plugin, intervalTicks, intervalTicks);
     }
 
+    // Schedules the pre-shrink telegraph to fire leadSeconds before the shrink begins (clamped so it
+    // never fires before the match starts).
+    private void scheduleTelegraph(int shrinkDelaySeconds) {
+        if (!telegraph.isEnabled() || telegraph.getLeadSeconds() <= 0) return;
+
+        int lead = Math.min(telegraph.getLeadSeconds(), shrinkDelaySeconds);
+        long warnTicks = (long) (shrinkDelaySeconds - lead) * TICKS_PER_SECOND;
+        telegraphTask = plugin.getServer().getScheduler().runTaskLater(plugin,
+                () -> telegraph.announce(activePlayers.get(), lead), warnTicks);
+    }
+
     public void stop() {
         if (!active) return;
         active = false;
         shrinking = false;
         shrinkStartTime = -1;
 
+        if (telegraphTask != null) { telegraphTask.cancel(); telegraphTask = null; }
         if (shrinkStartTask != null) { shrinkStartTask.cancel(); shrinkStartTask = null; }
         if (damageTask != null) { damageTask.cancel(); damageTask = null; }
 

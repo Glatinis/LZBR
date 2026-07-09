@@ -28,6 +28,20 @@ zone:
   shrink:
     delay-seconds: 60        # wait this long after the match starts before shrinking
     duration-seconds: 300    # shrink from initial to final radius over this long
+    # Center-screen telegraph shown/played shortly before the shrink begins.
+    # title/subtitle use MiniMessage formatting; {seconds} is replaced with the countdown.
+    telegraph:
+      enabled: true
+      lead-seconds: 10                                       # how long before the shrink to warn
+      title: "<red><bold>ZONE CLOSING IN</bold></red>"
+      subtitle: "<yellow>The zone shrinks in {seconds}s</yellow>"
+      fade-in-ticks: 10
+      stay-ticks: 40
+      fade-out-ticks: 10
+      sound:
+        key: "minecraft:block.note_block.pling"             # any Minecraft sound id, or "" for none
+        volume: 1.0
+        pitch: 1.0
   # Damage dealt to players the zone has swept outside.
   damage:
     amount: 1.0              # damage per interval (2.0 = one heart)

@@ -47,6 +47,19 @@ public class ConfigRepository {
     public int getZoneWarningDistance() { return config().getInt("zone.warning.distance-blocks"); }
     public int getZoneWarningTime() { return config().getInt("zone.warning.time-seconds"); }
 
+    // --- Zone shrink telegraph ----------------------------------------------
+
+    public boolean isZoneShrinkTelegraphEnabled() { return config().getBoolean("zone.shrink.telegraph.enabled", true); }
+    public int getZoneShrinkTelegraphLead() { return config().getInt("zone.shrink.telegraph.lead-seconds", 10); }
+    public String getZoneShrinkTelegraphTitle() { return config().getString("zone.shrink.telegraph.title", ""); }
+    public String getZoneShrinkTelegraphSubtitle() { return config().getString("zone.shrink.telegraph.subtitle", ""); }
+    public int getZoneShrinkTelegraphFadeInTicks() { return config().getInt("zone.shrink.telegraph.fade-in-ticks", 10); }
+    public int getZoneShrinkTelegraphStayTicks() { return config().getInt("zone.shrink.telegraph.stay-ticks", 40); }
+    public int getZoneShrinkTelegraphFadeOutTicks() { return config().getInt("zone.shrink.telegraph.fade-out-ticks", 10); }
+    public String getZoneShrinkTelegraphSoundKey() { return config().getString("zone.shrink.telegraph.sound.key", ""); }
+    public double getZoneShrinkTelegraphSoundVolume() { return config().getDouble("zone.shrink.telegraph.sound.volume", 1.0); }
+    public double getZoneShrinkTelegraphSoundPitch() { return config().getDouble("zone.shrink.telegraph.sound.pitch", 1.0); }
+
     // --- Arena reset ---------------------------------------------------------
 
     public boolean isArenaResetEnabled() { return config().getBoolean("arena.reset.enabled", true); }
