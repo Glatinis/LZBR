@@ -5,7 +5,7 @@ version: '${version}'
 main: com.github.Glatinis.lZBR.core.LZBR
 api-version: '26.1.2'
 load: POSTWORLD
-softdepend: [Multiverse-Core, packetevents]
+softdepend: [Multiverse-Core]
 
 commands:
   lzbr:

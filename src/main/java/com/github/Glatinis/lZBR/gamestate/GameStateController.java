@@ -5,7 +5,7 @@ import com.github.Glatinis.lZBR.gamestate.lobby.LobbyManager;
 import com.github.Glatinis.lZBR.returncode.JoinCode;
 import com.github.Glatinis.lZBR.returncode.LeaveCode;
 import com.github.Glatinis.lZBR.returncode.StartCode;
-import com.github.Glatinis.lZBR.world.ZoneController;
+import com.github.Glatinis.lZBR.world.zone.ZoneController;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

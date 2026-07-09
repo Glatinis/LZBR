@@ -14,7 +14,6 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
     compileOnly("org.mvplugins.multiverse.core:multiverse-core:5.7.1")
-    compileOnly("com.github.retrooper:packetevents-spigot:2.13.0")
 }
 
 java {

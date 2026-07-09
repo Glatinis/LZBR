@@ -8,8 +8,8 @@ import com.github.Glatinis.lZBR.gamestate.lobby.LobbyManager;
 import com.github.Glatinis.lZBR.gamestate.listeners.PlayerBRListener;
 import com.github.Glatinis.lZBR.gamestate.listeners.PlayerQuitListener;
 import com.github.Glatinis.lZBR.world.WorldController;
-import com.github.Glatinis.lZBR.world.ZoneBorder;
-import com.github.Glatinis.lZBR.world.ZoneController;
+import com.github.Glatinis.lZBR.world.zone.ZoneBorder;
+import com.github.Glatinis.lZBR.world.zone.ZoneController;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -34,12 +34,7 @@ public final class LZBR extends JavaPlugin {
 
         lobbyManager = new LobbyManager(configRepository);
 
-        ZoneBorder zoneBorder = null;
-        if (getServer().getPluginManager().getPlugin("packetevents") != null) {
-            zoneBorder = new ZoneBorder(configRepository);
-        } else {
-            getLogger().warning("PacketEvents not installed — zone border visuals will be disabled.");
-        }
+        ZoneBorder zoneBorder = new ZoneBorder(configRepository);
         zoneController = new ZoneController(this, configRepository, zoneBorder);
 
         brService = new BRService(worldController);
