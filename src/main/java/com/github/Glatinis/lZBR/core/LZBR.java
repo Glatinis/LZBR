@@ -7,6 +7,7 @@ import com.github.Glatinis.lZBR.gamestate.br.BRService;
 import com.github.Glatinis.lZBR.gamestate.lobby.LobbyManager;
 import com.github.Glatinis.lZBR.gamestate.listeners.PlayerBRListener;
 import com.github.Glatinis.lZBR.gamestate.listeners.PlayerQuitListener;
+import com.github.Glatinis.lZBR.loot.LootManager;
 import com.github.Glatinis.lZBR.world.WorldController;
 import com.github.Glatinis.lZBR.world.arena.ArenaResetService;
 import com.github.Glatinis.lZBR.world.zone.ZoneBorder;
@@ -20,6 +21,7 @@ import java.util.List;
 public final class LZBR extends JavaPlugin {
 
     private ConfigRepository configRepository;
+    private LootRepository lootRepository;
     private GameStateController gameStateController;
     private WorldController worldController;
 
@@ -27,11 +29,15 @@ public final class LZBR extends JavaPlugin {
     private BRService brService;
     private LobbyManager lobbyManager;
     private ZoneController zoneController;
+    private LootManager lootManager;
 
     @Override
     public void onEnable() {
         configRepository = new ConfigRepository(this);
+        lootRepository = new LootRepository(this);
         worldController = new WorldController(this, configRepository);
+
+        lootManager = new LootManager(this, lootRepository);
 
         lobbyManager = new LobbyManager(configRepository);
 
@@ -44,12 +50,12 @@ public final class LZBR extends JavaPlugin {
         ArenaResetService arenaResetService = new ArenaResetService(this, configRepository);
 
         gameStateController = new GameStateController(this, configRepository, lobbyManager, brManager,
-                zoneController, arenaResetService);
+                zoneController, arenaResetService, lootManager);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();
             commands.register(
-                    new LZBRCommand(gameStateController, worldController).build(),
+                    new LZBRCommand(gameStateController, worldController, lootManager).build(),
                     "LiveZone Battle Royale admin command",
                     List.of("lz") // alias so /lz start also works
             );

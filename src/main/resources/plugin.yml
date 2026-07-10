@@ -9,7 +9,7 @@ softdepend: [Multiverse-Core, FastAsyncWorldEdit]
 
 commands:
   lzbr:
-    usage: /<command> <join | start | leave | end | arena | zonetest>
+    usage: /<command> <join | start | leave | end | arena | loot | test>
     alias: [lz]
 
 authors: [ Glatinis ]

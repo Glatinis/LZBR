@@ -5,6 +5,7 @@ import com.github.Glatinis.lZBR.gamestate.br.BRManager;
 import com.github.Glatinis.lZBR.gamestate.br.MatchAnnouncer;
 import com.github.Glatinis.lZBR.gamestate.br.MatchCountdown;
 import com.github.Glatinis.lZBR.gamestate.lobby.LobbyManager;
+import com.github.Glatinis.lZBR.loot.LootManager;
 import com.github.Glatinis.lZBR.returncode.JoinCode;
 import com.github.Glatinis.lZBR.returncode.LeaveCode;
 import com.github.Glatinis.lZBR.returncode.StartCode;
@@ -26,6 +27,7 @@ public class GameStateController {
     private final BRManager brManager;
     private final ZoneController zoneController;
     private final ArenaResetService arenaResetService;
+    private final LootManager lootManager;
     private final ConfigRepository config;
 
     private final MatchCountdown countdown;
@@ -34,13 +36,15 @@ public class GameStateController {
     private GameState gameState = GameState.LOBBY;
 
     public GameStateController(JavaPlugin plugin, ConfigRepository config, LobbyManager lobbyManager,
-                              BRManager brManager, ZoneController zoneController, ArenaResetService arenaResetService) {
+                              BRManager brManager, ZoneController zoneController, ArenaResetService arenaResetService,
+                              LootManager lootManager) {
         this.plugin = plugin;
         this.config = config;
         this.lobbyManager = lobbyManager;
         this.brManager = brManager;
         this.zoneController = zoneController;
         this.arenaResetService = arenaResetService;
+        this.lootManager = lootManager;
         this.countdown = new MatchCountdown(plugin, config);
         this.announcer = new MatchAnnouncer(config, plugin.getLogger());
     }
@@ -101,6 +105,12 @@ public class GameStateController {
             return;
         }
 
+        // Fresh loot for every match: place, empty and re-fill each configured chest before players land.
+        int filledChests = lootManager.fillAllChests();
+        if (filledChests > 0) {
+            plugin.getLogger().info("Filled " + filledChests + " loot chest(s) for the match.");
+        }
+
         brManager.sendToArena();
         announcer.announceStart(players);
         zoneController.start(players, brManager::getPlayers);
@@ -141,6 +151,8 @@ public class GameStateController {
 
     private void returnToLobbyAndReset() {
         brManager.returnAllToLobby();
+        // Empty leftover loot so a disabled/absent arena reset doesn't leave stocked chests behind.
+        lootManager.clearAllChests();
         arenaResetService.reset(success -> {
             brManager.reset();
             gameState = GameState.LOBBY;
@@ -196,6 +208,10 @@ public class GameStateController {
 
         zoneController.startTest(player, 15.0, 3.0, 5, 15);
         return true;
+    }
+
+    public int fillLootChests() {
+        return lootManager.fillAllChests();
     }
 
     private List<Player> onlineLobbyPlayers() {

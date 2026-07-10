@@ -1,0 +1,147 @@
+# ============================================================================
+#  LZBR — Loot configuration
+# ----------------------------------------------------------------------------
+#  Controls what spawns inside loot chests, and where those chests are.
+#  Reload after editing with:  /lzbr loot reload
+#
+#  Sections, in order:
+#    1. settings         — how many items each chest gets, and fill behaviour
+#    2. rarities         — the rarity tiers, their display names and spawn odds
+#    3. loot             — the loot table: every item that can spawn
+#    4. chest-locations  — where the chests are (usually set in-game)
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+#  1. Settings
+# ----------------------------------------------------------------------------
+settings:
+  # Each match, every chest is filled with a random number of item stacks
+  # between these two values (inclusive). Deliberately kept below the brim so
+  # chests are never guaranteed-full.
+  items-per-chest:
+    minimum: 3
+    maximum: 7
+  # true  -> items are scattered across random slots in the chest
+  # false -> items are packed into the first slots
+  scatter-items: true
+
+# ----------------------------------------------------------------------------
+#  2. Rarities
+# ----------------------------------------------------------------------------
+#  Every loot item belongs to a rarity. When a slot is filled a rarity is
+#  rolled first using the chances below, then a random item of that rarity is
+#  chosen.
+#
+#  chance is a relative weight — values do NOT have to add up to 100, but
+#  keeping them on a 0–100 scale makes them read as percentages. Rarities that
+#  have no items in the loot table are skipped automatically.
+#
+#  display-name uses MiniMessage formatting and is shown in each item's lore so
+#  players can tell how good a drop is.
+# ----------------------------------------------------------------------------
+rarities:
+  common:
+    display-name: "<gray>Common</gray>"
+    chance: 55.0
+  uncommon:
+    display-name: "<green>Uncommon</green>"
+    chance: 25.0
+  rare:
+    display-name: "<aqua>Rare</aqua>"
+    chance: 13.0
+  epic:
+    display-name: "<light_purple>Epic</light_purple>"
+    chance: 5.0
+  legendary:
+    display-name: "<gold><bold>Legendary</bold></gold>"
+    chance: 2.0
+
+# ----------------------------------------------------------------------------
+#  3. Loot table
+# ----------------------------------------------------------------------------
+#  Each entry supports:
+#    material      (required) any Minecraft material name, e.g. IRON_SWORD
+#    rarity        (required) one of the rarity keys defined above
+#    amount        (optional) minimum/maximum stack size, default 1
+#    name          (optional) custom item name, MiniMessage formatted
+#    lore          (optional) list of MiniMessage lore lines
+#    enchantments  (optional) map of enchantment -> level (vanilla enchant names)
+#    show-rarity   (optional) append the rarity display name to the lore, default true
+# ----------------------------------------------------------------------------
+loot:
+  # --- Common -------------------------------------------------------------
+  - material: STONE_SWORD
+    rarity: common
+  - material: LEATHER_CHESTPLATE
+    rarity: common
+  - material: BREAD
+    rarity: common
+    amount:
+      minimum: 2
+      maximum: 5
+  - material: ARROW
+    rarity: common
+    amount:
+      minimum: 4
+      maximum: 16
+
+  # --- Uncommon -----------------------------------------------------------
+  - material: IRON_SWORD
+    rarity: uncommon
+  - material: IRON_CHESTPLATE
+    rarity: uncommon
+  - material: BOW
+    rarity: uncommon
+  - material: GOLDEN_APPLE
+    rarity: uncommon
+    amount:
+      minimum: 1
+      maximum: 2
+
+  # --- Rare ---------------------------------------------------------------
+  - material: DIAMOND_SWORD
+    rarity: rare
+    enchantments:
+      SHARPNESS: 1
+  - material: DIAMOND_CHESTPLATE
+    rarity: rare
+    enchantments:
+      PROTECTION: 1
+
+  # --- Epic ---------------------------------------------------------------
+  - material: DIAMOND_SWORD
+    rarity: epic
+    name: "<light_purple>Duelist's Edge</light_purple>"
+    enchantments:
+      SHARPNESS: 3
+      UNBREAKING: 3
+  - material: ENCHANTED_GOLDEN_APPLE
+    rarity: epic
+
+  # --- Legendary ----------------------------------------------------------
+  - material: NETHERITE_SWORD
+    rarity: legendary
+    name: "<gold>Zone Breaker</gold>"
+    lore:
+      - "<gray>Forged in the eye of the storm.</gray>"
+    enchantments:
+      SHARPNESS: 5
+      FIRE_ASPECT: 2
+      UNBREAKING: 3
+
+# ----------------------------------------------------------------------------
+#  4. Chest locations
+# ----------------------------------------------------------------------------
+#  Best set in-game: look at a placed chest and run /lzbr loot chest add. They
+#  are saved here automatically. You can also add them by hand.
+#
+#  facing is the direction the chest opening points (NORTH/EAST/SOUTH/WEST); it
+#  is re-applied every match so chests always look the same after a reset.
+# ----------------------------------------------------------------------------
+chest-locations: []
+#  Example:
+#  - world: br
+#    x: 12
+#    y: 65
+#    z: -8
+#    facing: NORTH
