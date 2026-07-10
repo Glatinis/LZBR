@@ -61,7 +61,7 @@ public final class LZBR extends JavaPlugin {
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();
             commands.register(
-                    new LZBRCommand(gameStateController, worldController, lootManager, mobManager).build(),
+                    new LZBRCommand(gameStateController, worldController, configRepository, lootManager, mobManager).build(),
                     "LiveZone Battle Royale admin command",
                     List.of("lz") // alias so /lz start also works
             );
