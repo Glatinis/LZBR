@@ -6,6 +6,7 @@ import com.github.Glatinis.lZBR.gamestate.br.MatchAnnouncer;
 import com.github.Glatinis.lZBR.gamestate.br.MatchCountdown;
 import com.github.Glatinis.lZBR.gamestate.lobby.LobbyManager;
 import com.github.Glatinis.lZBR.loot.LootManager;
+import com.github.Glatinis.lZBR.mob.MobManager;
 import com.github.Glatinis.lZBR.returncode.JoinCode;
 import com.github.Glatinis.lZBR.returncode.LeaveCode;
 import com.github.Glatinis.lZBR.returncode.StartCode;
@@ -28,6 +29,7 @@ public class GameStateController {
     private final ZoneController zoneController;
     private final ArenaResetService arenaResetService;
     private final LootManager lootManager;
+    private final MobManager mobManager;
     private final ConfigRepository config;
 
     private final MatchCountdown countdown;
@@ -37,7 +39,7 @@ public class GameStateController {
 
     public GameStateController(JavaPlugin plugin, ConfigRepository config, LobbyManager lobbyManager,
                               BRManager brManager, ZoneController zoneController, ArenaResetService arenaResetService,
-                              LootManager lootManager) {
+                              LootManager lootManager, MobManager mobManager) {
         this.plugin = plugin;
         this.config = config;
         this.lobbyManager = lobbyManager;
@@ -45,6 +47,7 @@ public class GameStateController {
         this.zoneController = zoneController;
         this.arenaResetService = arenaResetService;
         this.lootManager = lootManager;
+        this.mobManager = mobManager;
         this.countdown = new MatchCountdown(plugin, config);
         this.announcer = new MatchAnnouncer(config, plugin.getLogger());
     }
@@ -114,6 +117,7 @@ public class GameStateController {
         brManager.sendToArena();
         announcer.announceStart(players);
         zoneController.start(players, brManager::getPlayers);
+        mobManager.startSpawning();
     }
 
     public boolean endGame() {
@@ -137,6 +141,8 @@ public class GameStateController {
         gameState = GameState.POST_GAME;
         countdown.cancel();
         zoneController.stop();
+        mobManager.stopSpawning();
+        mobManager.despawnAll();
 
         List<Player> participants = brManager.getAllParticipants();
         if (winner != null) {
@@ -212,6 +218,10 @@ public class GameStateController {
 
     public int fillLootChests() {
         return lootManager.fillAllChests();
+    }
+
+    public int testSpawnMobs(int count) {
+        return mobManager.spawnBurst(count);
     }
 
     private List<Player> onlineLobbyPlayers() {

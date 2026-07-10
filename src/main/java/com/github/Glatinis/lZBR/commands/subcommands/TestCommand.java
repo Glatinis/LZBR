@@ -4,6 +4,7 @@ import com.github.Glatinis.lZBR.commands.Messages;
 import com.github.Glatinis.lZBR.commands.SubCommand;
 import com.github.Glatinis.lZBR.gamestate.GameStateController;
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -14,7 +15,9 @@ import org.bukkit.entity.Player;
 // /lzbr test — admin tools for trying things out without running a full match:
 //   /lzbr test zone [stop]   spin up a shrinking test zone around you
 //   /lzbr test loot          fill the configured loot chests right now
+//   /lzbr test mob [count]   spawn mobs at the configured spawn points right now
 public class TestCommand implements SubCommand {
+    private static final int DEFAULT_TEST_MOBS = 3;
     private final GameStateController gameState;
 
     public TestCommand(GameStateController gameState) {
@@ -31,7 +34,11 @@ public class TestCommand implements SubCommand {
                         .then(Commands.literal("stop")
                                 .executes(this::executeZoneStop)))
                 .then(Commands.literal("loot")
-                        .executes(this::executeLoot));
+                        .executes(this::executeLoot))
+                .then(Commands.literal("mob")
+                        .executes(ctx -> executeMob(ctx, DEFAULT_TEST_MOBS))
+                        .then(Commands.argument("count", IntegerArgumentType.integer(1, 50))
+                                .executes(ctx -> executeMob(ctx, IntegerArgumentType.getInteger(ctx, "count")))));
     }
 
     private int executeZoneStart(CommandContext<CommandSourceStack> ctx) {
@@ -63,6 +70,20 @@ public class TestCommand implements SubCommand {
             Messages.success(sender, "Filled " + filled + " loot chest(s) with fresh loot.");
         } else {
             Messages.warn(sender, "No loot chests were filled — none are configured, or their world isn't loaded.");
+        }
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private int executeMob(CommandContext<CommandSourceStack> ctx, int count) {
+        CommandSender sender = ctx.getSource().getSender();
+
+        int spawned = gameState.testSpawnMobs(count);
+        if (spawned > 0) {
+            Messages.success(sender, "Spawned " + spawned + " mob(s) at the configured spawn points.");
+        } else {
+            Messages.warn(sender, "No mobs spawned — check spawn points, mob types, the alive cap, "
+                    + "and that mobs are enabled in mobs.yml.");
         }
 
         return Command.SINGLE_SUCCESS;

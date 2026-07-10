@@ -129,4 +129,12 @@ public class ZoneController {
     public boolean isActive() {
         return active;
     }
+
+    public double getCenterX() {
+        return centerX;
+    }
+
+    public double getCenterZ() {
+        return centerZ;
+    }
 }

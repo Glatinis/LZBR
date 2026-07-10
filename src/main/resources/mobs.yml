@@ -1,0 +1,95 @@
+# ============================================================================
+#  LZBR — Mob configuration
+# ----------------------------------------------------------------------------
+#  Ambient hostile mobs that spawn in the arena for a bit of PvE flavour. They
+#  are deliberately kept sparse so PvP stays the main event — the density caps
+#  below are the knobs that keep mobs supporting the fight, not competing with
+#  it. Reload after editing with:  /lzbr mobs reload
+#
+#  Sections, in order:
+#    1. settings         — master toggle
+#    2. spawning         — cadence and the density limits that keep mobs low
+#    3. mob-types        — which mobs spawn and their relative weights
+#    4. drops            — chance to drop loot (pulled from loot.yml) on death
+#    5. spawn-locations  — where mobs spawn (usually set in-game)
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+#  1. Settings
+# ----------------------------------------------------------------------------
+settings:
+  # Master switch for the whole mob system.
+  enabled: true
+
+# ----------------------------------------------------------------------------
+#  2. Spawning
+# ----------------------------------------------------------------------------
+#  A spawn tick runs on an interval; each tick may spawn a small random number
+#  of mobs, but never past the alive cap. Tune these to keep density low.
+# ----------------------------------------------------------------------------
+spawning:
+  # How often a spawn attempt runs.
+  interval-seconds: 20
+  # Random number of mobs to try to spawn each tick (inclusive).
+  per-tick:
+    minimum: 0
+    maximum: 2
+  # Hard cap on LZBR-spawned mobs alive at once. This is the main lever for
+  # keeping mobs a supporting act rather than a swarm.
+  max-alive: 12
+  # Mobs spawn within this many blocks (horizontally) of a spawn point. 0 spawns
+  # exactly on the point.
+  spread-radius: 6
+  # Never spawn a mob within this many blocks of a living player, so mobs don't
+  # pop in on top of a fight.
+  min-player-distance: 12
+  # Once the shrinking zone's radius drops below this (blocks), stop spawning so
+  # the endgame is pure PvP. Set to 0 to keep spawning the whole match.
+  stop-below-zone-radius: 60
+
+# ----------------------------------------------------------------------------
+#  3. Mob types
+# ----------------------------------------------------------------------------
+#  Which mobs can spawn, and how likely each is. weight is a relative value —
+#  it does not have to add up to anything. Use any spawnable living entity name.
+# ----------------------------------------------------------------------------
+mob-types:
+  ZOMBIE:
+    weight: 40
+  SKELETON:
+    weight: 30
+  SPIDER:
+    weight: 20
+  CREEPER:
+    weight: 10
+
+# ----------------------------------------------------------------------------
+#  4. Drops
+# ----------------------------------------------------------------------------
+#  Loot dropped when an LZBR mob is killed. Items are pulled from the loot table
+#  in loot.yml — the same rarities and probabilities your chests use — so mob
+#  loot stays consistent with chest loot and is configured in one place.
+# ----------------------------------------------------------------------------
+drops:
+  # Chance (0–100) that a killed mob drops any LZBR loot at all.
+  chance: 25.0
+  # If it does drop, how many items to roll from the loot table (inclusive).
+  rolls:
+    minimum: 1
+    maximum: 1
+  # Keep the mob's normal vanilla drops too (rotten flesh, bones, arrows, …).
+  keep-vanilla-drops: true
+
+# ----------------------------------------------------------------------------
+#  5. Spawn locations
+# ----------------------------------------------------------------------------
+#  Best set in-game: stand where you want a spawn point and run
+#  /lzbr mobs spawn add. They are saved here automatically. You can also add
+#  them by hand. Mobs appear within spawning.spread-radius of these points.
+# ----------------------------------------------------------------------------
+spawn-locations: []
+#  Example:
+#  - world: br
+#    x: 40
+#    y: 64
+#    z: -20

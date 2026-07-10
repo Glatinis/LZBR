@@ -57,6 +57,12 @@ public class LootManager {
         return table.itemCount();
     }
 
+    // Draws a single item from the loot table (weighted by rarity), or null if the table is empty.
+    // Shared with the mob system so mob drops use the same items and probabilities as chests.
+    public ItemStack rollLoot() {
+        return table.roll();
+    }
+
     // --- Match hooks ---------------------------------------------------------
 
     // Places (with the stored facing), empties and re-fills every chest. Returns how many were filled.
