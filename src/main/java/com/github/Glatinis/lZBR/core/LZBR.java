@@ -69,7 +69,7 @@ public final class LZBR extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(gameStateController), this);
         getServer().getPluginManager().registerEvents(new PlayerBRListener(gameStateController, this), this);
-        getServer().getPluginManager().registerEvents(mobManager, this);
+        getServer().getPluginManager().registerEvents(mobManager.getDeathListener(), this);
 
         if (getServer().getPluginManager().getPlugin("Multiverse-Core") == null) {
             getLogger().severe("Multiverse-Core is not installed! World switching will not work until it's added.");

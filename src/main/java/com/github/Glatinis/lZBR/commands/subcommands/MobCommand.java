@@ -3,7 +3,7 @@ package com.github.Glatinis.lZBR.commands.subcommands;
 import com.github.Glatinis.lZBR.commands.Messages;
 import com.github.Glatinis.lZBR.commands.SubCommand;
 import com.github.Glatinis.lZBR.mob.MobManager;
-import com.github.Glatinis.lZBR.mob.SpawnPoint;
+import com.github.Glatinis.lZBR.mob.spawn.SpawnPoint;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;

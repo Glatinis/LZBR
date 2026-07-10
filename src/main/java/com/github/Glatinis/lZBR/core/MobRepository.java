@@ -1,6 +1,8 @@
 package com.github.Glatinis.lZBR.core;
 
-import com.github.Glatinis.lZBR.mob.SpawnPoint;
+import com.github.Glatinis.lZBR.mob.DropSettings;
+import com.github.Glatinis.lZBR.mob.spawn.SpawnPoint;
+import com.github.Glatinis.lZBR.mob.spawn.SpawnSettings;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -8,12 +10,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-// Owns mobs.yml. Exposes the spawn/density settings, mob-type weights and drop rules, and reads/writes
-// the spawn-location list that admins edit in-game.
+// Owns mobs.yml. The single boundary between the mob feature and the file: exposes the spawn and drop
+// settings as typed records, the mob-type weights, and reads/writes the spawn-location list that admins
+// edit in-game. Translating spawn points to/from YAML maps lives here so the models stay pure.
 public class MobRepository {
     private static final String FILE_NAME = "mobs.yml";
 
@@ -36,17 +40,28 @@ public class MobRepository {
 
     // --- Settings ------------------------------------------------------------
 
-    public boolean isEnabled() { return config.getBoolean("settings.enabled", true); }
+    public boolean isEnabled() {
+        return config.getBoolean("settings.enabled", true);
+    }
 
-    // --- Spawning ------------------------------------------------------------
+    public SpawnSettings getSpawnSettings() {
+        return new SpawnSettings(
+                config.getInt("spawning.interval-seconds", 20),
+                config.getInt("spawning.per-tick.minimum", 0),
+                config.getInt("spawning.per-tick.maximum", 2),
+                config.getInt("spawning.max-alive", 12),
+                config.getInt("spawning.spread-radius", 6),
+                config.getInt("spawning.min-player-distance", 12),
+                config.getInt("spawning.stop-below-zone-radius", 60));
+    }
 
-    public int getIntervalSeconds() { return config.getInt("spawning.interval-seconds", 20); }
-    public int getMinPerTick() { return config.getInt("spawning.per-tick.minimum", 0); }
-    public int getMaxPerTick() { return config.getInt("spawning.per-tick.maximum", 2); }
-    public int getMaxAlive() { return config.getInt("spawning.max-alive", 12); }
-    public int getSpreadRadius() { return config.getInt("spawning.spread-radius", 6); }
-    public int getMinPlayerDistance() { return config.getInt("spawning.min-player-distance", 12); }
-    public int getStopBelowZoneRadius() { return config.getInt("spawning.stop-below-zone-radius", 60); }
+    public DropSettings getDropSettings() {
+        return new DropSettings(
+                config.getDouble("drops.chance", 25.0),
+                config.getInt("drops.rolls.minimum", 1),
+                config.getInt("drops.rolls.maximum", 1),
+                config.getBoolean("drops.keep-vanilla-drops", true));
+    }
 
     // --- Mob types -----------------------------------------------------------
 
@@ -54,20 +69,17 @@ public class MobRepository {
         return config.getConfigurationSection("mob-types");
     }
 
-    // --- Drops ---------------------------------------------------------------
-
-    public double getDropChance() { return config.getDouble("drops.chance", 25.0); }
-    public int getMinDropRolls() { return config.getInt("drops.rolls.minimum", 1); }
-    public int getMaxDropRolls() { return config.getInt("drops.rolls.maximum", 1); }
-    public boolean isKeepVanillaDrops() { return config.getBoolean("drops.keep-vanilla-drops", true); }
-
     // --- Spawn locations -----------------------------------------------------
 
     public List<SpawnPoint> loadSpawnPoints() {
         List<SpawnPoint> points = new ArrayList<>();
         for (Map<?, ?> raw : config.getMapList("spawn-locations")) {
             try {
-                points.add(SpawnPoint.fromMap(raw));
+                points.add(new SpawnPoint(
+                        String.valueOf(raw.get("world")),
+                        toInt(raw.get("x")),
+                        toInt(raw.get("y")),
+                        toInt(raw.get("z"))));
             } catch (RuntimeException e) {
                 plugin.getLogger().warning("Skipping malformed spawn-location entry in mobs.yml: " + raw);
             }
@@ -78,7 +90,12 @@ public class MobRepository {
     public void saveSpawnPoints(List<SpawnPoint> points) {
         List<Map<String, Object>> serialized = new ArrayList<>();
         for (SpawnPoint point : points) {
-            serialized.add(point.toMap());
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("world", point.world());
+            map.put("x", point.x());
+            map.put("y", point.y());
+            map.put("z", point.z());
+            serialized.add(map);
         }
         config.set("spawn-locations", serialized);
         try {
@@ -86,5 +103,10 @@ public class MobRepository {
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to save spawn locations to mobs.yml", e);
         }
+    }
+
+    private static int toInt(Object value) {
+        if (value instanceof Number number) return number.intValue();
+        return Integer.parseInt(String.valueOf(value));
     }
 }

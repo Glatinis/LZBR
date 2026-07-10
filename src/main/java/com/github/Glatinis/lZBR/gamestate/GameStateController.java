@@ -221,7 +221,7 @@ public class GameStateController {
     }
 
     public int testSpawnMobs(int count) {
-        return mobManager.spawnBurst(count);
+        return mobManager.testSpawn(count);
     }
 
     private List<Player> onlineLobbyPlayers() {

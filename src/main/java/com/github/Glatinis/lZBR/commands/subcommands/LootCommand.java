@@ -2,8 +2,8 @@ package com.github.Glatinis.lZBR.commands.subcommands;
 
 import com.github.Glatinis.lZBR.commands.Messages;
 import com.github.Glatinis.lZBR.commands.SubCommand;
-import com.github.Glatinis.lZBR.loot.ChestLocation;
 import com.github.Glatinis.lZBR.loot.LootManager;
+import com.github.Glatinis.lZBR.loot.chest.ChestLocation;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -75,7 +75,8 @@ public class LootCommand implements SubCommand {
 
         Messages.info(sender, "Loot chests (" + chests.size() + "):");
         for (ChestLocation chest : chests) {
-            Messages.info(sender, " - " + LootManager.describe(chest));
+            Messages.info(sender, " - " + chest.world() + " " + chest.x() + ", " + chest.y() + ", " + chest.z()
+                    + " (" + chest.facing() + ")");
         }
 
         return Command.SINGLE_SUCCESS;
