@@ -51,6 +51,30 @@ zone:
     distance-blocks: 5
     time-seconds: 10
 
+# Where players land when a match starts. They're scattered randomly around the zone center
+# (zone.center above) rather than all landing on the same spot.
+spawn:
+  radius: 400            # scatter players within this many blocks of the zone center
+  min-distance: 15       # try to keep spawn points at least this many blocks apart
+  max-attempts: 30       # tries per player to find a spot that's safe and far enough from others
+  # Rejects landing spots higher than this many blocks above the arena's typical ground height
+  # (sampled automatically each match), so players don't land on rooftops. Raise it if your arena
+  # has legitimate hills/terrain taller than this; set to 0 to disable the check entirely.
+  max-height-above-ground: 6
+  # Players are frozen in place (can still look around) while this countdown plays, so everyone
+  # lands and gets their bearings before the match actually goes live.
+  freeze:
+    seconds: 5
+    title: "<green><bold>Get Ready!</bold></green>"
+    subtitle: "<yellow>Moving in <bold>{seconds}</bold>s</yellow>"
+    fade-in-ticks: 0
+    stay-ticks: 22
+    fade-out-ticks: 4
+    sound:
+      key: "minecraft:block.note_block.hat"
+      volume: 1.0
+      pitch: 1.0
+
 # Match flow — the countdown before the zone goes live, and the win screen.
 # All title/subtitle/broadcast fields use MiniMessage formatting.
 game:
@@ -77,9 +101,9 @@ game:
       pitch: 1.0
   # Shown when the match ends. {winner} is replaced with the winner's name.
   win:
-    title: "<gold><bold>VICTORY</bold></gold>"
-    subtitle: "<yellow>{winner} won the match</yellow>"
-    broadcast: "<gold>{winner}</gold> <yellow>won the Battle Royale!</yellow>"
+    title: "<green><bold>VICTORY</bold></green>"
+    subtitle: "<green>{winner} won the match</green>"
+    broadcast: "<green><bold>{winner}</bold> won the Battle Royale!</green>"
     no-winner-broadcast: "<yellow>The match ended with no winner.</yellow>"
     fade-in-ticks: 10
     stay-ticks: 60

@@ -1,6 +1,7 @@
 package com.github.Glatinis.lZBR.gamestate.br;
 
 import com.github.Glatinis.lZBR.world.WorldController;
+import com.github.Glatinis.lZBR.world.spawn.PlayerScatterService;
 import org.bukkit.GameMode;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -12,16 +13,16 @@ import java.util.Collection;
 
 public class BRService {
     private final WorldController worldController;
+    private final PlayerScatterService scatterService;
 
-    public BRService(WorldController worldController) {
+    public BRService(WorldController worldController, PlayerScatterService scatterService) {
         this.worldController = worldController;
+        this.scatterService = scatterService;
     }
 
     public void sendToArena(Collection<Player> players) {
-        for (Player player : players) {
-            resetState(player);
-            worldController.teleportToBR(player);
-        }
+        players.forEach(this::resetState);
+        worldController.withBrWorld(world -> scatterService.scatter(world, players));
     }
 
     public void returnToLobby(Collection<Player> players) {

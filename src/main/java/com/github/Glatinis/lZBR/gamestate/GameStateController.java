@@ -4,6 +4,8 @@ import com.github.Glatinis.lZBR.core.ConfigRepository;
 import com.github.Glatinis.lZBR.gamestate.br.BRManager;
 import com.github.Glatinis.lZBR.gamestate.br.MatchAnnouncer;
 import com.github.Glatinis.lZBR.gamestate.br.MatchCountdown;
+import com.github.Glatinis.lZBR.gamestate.br.PlayerFreezeService;
+import com.github.Glatinis.lZBR.gamestate.br.SpawnFreezeCountdown;
 import com.github.Glatinis.lZBR.gamestate.lobby.LobbyManager;
 import com.github.Glatinis.lZBR.loot.LootManager;
 import com.github.Glatinis.lZBR.mob.MobManager;
@@ -34,12 +36,13 @@ public class GameStateController {
 
     private final MatchCountdown countdown;
     private final MatchAnnouncer announcer;
+    private final SpawnFreezeCountdown spawnFreezeCountdown;
 
     private GameState gameState = GameState.LOBBY;
 
     public GameStateController(JavaPlugin plugin, ConfigRepository config, LobbyManager lobbyManager,
                               BRManager brManager, ZoneController zoneController, ArenaResetService arenaResetService,
-                              LootManager lootManager, MobManager mobManager) {
+                              LootManager lootManager, MobManager mobManager, PlayerFreezeService playerFreezeService) {
         this.plugin = plugin;
         this.config = config;
         this.lobbyManager = lobbyManager;
@@ -50,6 +53,7 @@ public class GameStateController {
         this.mobManager = mobManager;
         this.countdown = new MatchCountdown(plugin, config);
         this.announcer = new MatchAnnouncer(config, plugin.getLogger());
+        this.spawnFreezeCountdown = new SpawnFreezeCountdown(plugin, config, playerFreezeService);
     }
 
     public GameState getGameState() {
@@ -115,9 +119,13 @@ public class GameStateController {
         }
 
         brManager.sendToArena();
-        announcer.announceStart(players);
-        zoneController.start(players, brManager::getPlayers);
-        mobManager.startSpawning();
+        // Players are frozen with an on-screen countdown right after landing; the zone/mobs/GO banner
+        // only kick in once everyone's released, so nobody gets a head start while others are still loading in.
+        spawnFreezeCountdown.start(players, () -> {
+            announcer.announceStart(players);
+            zoneController.start(players, brManager::getPlayers);
+            mobManager.startSpawning();
+        });
     }
 
     public boolean endGame() {
@@ -140,6 +148,7 @@ public class GameStateController {
     private void finishMatch(Player winner) {
         gameState = GameState.POST_GAME;
         countdown.cancel();
+        spawnFreezeCountdown.cancel();
         zoneController.stop();
         mobManager.stopSpawning();
         mobManager.despawnAll();

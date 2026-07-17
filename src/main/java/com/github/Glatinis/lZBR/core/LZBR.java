@@ -4,6 +4,7 @@ import com.github.Glatinis.lZBR.commands.LZBRCommand;
 import com.github.Glatinis.lZBR.gamestate.GameStateController;
 import com.github.Glatinis.lZBR.gamestate.br.BRManager;
 import com.github.Glatinis.lZBR.gamestate.br.BRService;
+import com.github.Glatinis.lZBR.gamestate.br.PlayerFreezeService;
 import com.github.Glatinis.lZBR.gamestate.lobby.LobbyManager;
 import com.github.Glatinis.lZBR.gamestate.listeners.PlayerBRListener;
 import com.github.Glatinis.lZBR.gamestate.listeners.PlayerQuitListener;
@@ -11,6 +12,7 @@ import com.github.Glatinis.lZBR.loot.LootManager;
 import com.github.Glatinis.lZBR.mob.MobManager;
 import com.github.Glatinis.lZBR.world.WorldController;
 import com.github.Glatinis.lZBR.world.arena.ArenaResetService;
+import com.github.Glatinis.lZBR.world.spawn.PlayerScatterService;
 import com.github.Glatinis.lZBR.world.zone.ZoneBorder;
 import com.github.Glatinis.lZBR.world.zone.ZoneController;
 import io.papermc.paper.command.brigadier.Commands;
@@ -33,6 +35,7 @@ public final class LZBR extends JavaPlugin {
     private ZoneController zoneController;
     private LootManager lootManager;
     private MobManager mobManager;
+    private PlayerFreezeService playerFreezeService;
 
     @Override
     public void onEnable() {
@@ -50,13 +53,15 @@ public final class LZBR extends JavaPlugin {
 
         mobManager = new MobManager(this, mobRepository, lootManager, zoneController);
 
-        brService = new BRService(worldController);
+        PlayerScatterService scatterService = new PlayerScatterService(configRepository);
+        brService = new BRService(worldController, scatterService);
         brManager = new BRManager(brService);
+        playerFreezeService = new PlayerFreezeService();
 
         ArenaResetService arenaResetService = new ArenaResetService(this, configRepository);
 
         gameStateController = new GameStateController(this, configRepository, lobbyManager, brManager,
-                zoneController, arenaResetService, lootManager, mobManager);
+                zoneController, arenaResetService, lootManager, mobManager, playerFreezeService);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();
@@ -70,6 +75,7 @@ public final class LZBR extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(gameStateController), this);
         getServer().getPluginManager().registerEvents(new PlayerBRListener(gameStateController, this), this);
         getServer().getPluginManager().registerEvents(mobManager.getDeathListener(), this);
+        getServer().getPluginManager().registerEvents(playerFreezeService, this);
 
         if (getServer().getPluginManager().getPlugin("Multiverse-Core") == null) {
             getLogger().severe("Multiverse-Core is not installed! World switching will not work until it's added.");

@@ -60,6 +60,23 @@ public class ConfigRepository {
     public double getZoneShrinkTelegraphSoundVolume() { return config().getDouble("zone.shrink.telegraph.sound.volume", 1.0); }
     public double getZoneShrinkTelegraphSoundPitch() { return config().getDouble("zone.shrink.telegraph.sound.pitch", 1.0); }
 
+    // --- Player spawn scatter -------------------------------------------------
+
+    public double getSpawnRadius() { return config().getDouble("spawn.radius", 400); }
+    public double getSpawnMinDistance() { return config().getDouble("spawn.min-distance", 15); }
+    public int getSpawnMaxAttempts() { return config().getInt("spawn.max-attempts", 30); }
+    public int getSpawnMaxHeightAboveGround() { return config().getInt("spawn.max-height-above-ground", 6); }
+
+    public int getSpawnFreezeSeconds() { return config().getInt("spawn.freeze.seconds", 5); }
+    public String getSpawnFreezeTitle() { return config().getString("spawn.freeze.title", ""); }
+    public String getSpawnFreezeSubtitle() { return config().getString("spawn.freeze.subtitle", ""); }
+    public int getSpawnFreezeFadeInTicks() { return config().getInt("spawn.freeze.fade-in-ticks", 0); }
+    public int getSpawnFreezeStayTicks() { return config().getInt("spawn.freeze.stay-ticks", 22); }
+    public int getSpawnFreezeFadeOutTicks() { return config().getInt("spawn.freeze.fade-out-ticks", 4); }
+    public String getSpawnFreezeSoundKey() { return config().getString("spawn.freeze.sound.key", ""); }
+    public double getSpawnFreezeSoundVolume() { return config().getDouble("spawn.freeze.sound.volume", 1.0); }
+    public double getSpawnFreezeSoundPitch() { return config().getDouble("spawn.freeze.sound.pitch", 1.0); }
+
     // --- Match flow: pre-game countdown -------------------------------------
 
     public int getCountdownSeconds() { return config().getInt("game.countdown.seconds", 10); }
