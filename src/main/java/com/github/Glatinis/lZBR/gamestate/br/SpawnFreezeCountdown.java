@@ -52,6 +52,7 @@ public class SpawnFreezeCountdown {
             @Override
             public void run() {
                 if (remaining <= 0) {
+                    cancel();
                     finish(onComplete);
                     return;
                 }
@@ -63,8 +64,7 @@ public class SpawnFreezeCountdown {
 
     private void finish(Runnable onComplete) {
         task = null;
-        freezeService.unfreeze(activePlayers);
-        activePlayers = null;
+        releaseEveryone();
         onComplete.run();
     }
 
@@ -75,9 +75,14 @@ public class SpawnFreezeCountdown {
             task.cancel();
             task = null;
         }
-        if (activePlayers != null) {
-            freezeService.unfreeze(activePlayers);
-            activePlayers = null;
-        }
+        releaseEveryone();
+    }
+
+    // Clears the whole frozen set rather than only the current roster: a player who disconnects mid
+    // countdown is already off the roster, so unfreezing just the roster would leave their UUID frozen
+    // and lock them in place when they reconnect.
+    private void releaseEveryone() {
+        activePlayers = null;
+        freezeService.clear();
     }
 }
