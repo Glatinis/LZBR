@@ -1,17 +1,17 @@
 # ============================================================================
-#  LZBR — Mob configuration
+#  LZBR: Mob configuration
 # ----------------------------------------------------------------------------
 #  Ambient hostile mobs that spawn in the arena for a bit of PvE flavour. They
-#  are deliberately kept sparse so PvP stays the main event — the density caps
+#  are deliberately kept sparse so PvP stays the main event. The density caps
 #  below are the knobs that keep mobs supporting the fight, not competing with
 #  it. Reload after editing with:  /lzbr mobs reload
 #
 #  Sections, in order:
-#    1. settings         — master toggle
-#    2. spawning         — cadence and the density limits that keep mobs low
-#    3. mob-types        — which mobs spawn and their relative weights
-#    4. drops            — chance to drop loot (pulled from loot.yml) on death
-#    5. spawn-locations  — where mobs spawn (usually set in-game)
+#    1. settings         master toggle
+#    2. spawning         cadence and the density limits that keep mobs low
+#    3. mob-types        which mobs spawn and their relative weights
+#    4. drops            chance to drop loot (pulled from loot.yml) on death
+#    5. spawn-locations  where mobs spawn (usually set in-game)
 # ============================================================================
 
 # ----------------------------------------------------------------------------
@@ -50,7 +50,7 @@ spawning:
 # ----------------------------------------------------------------------------
 #  3. Mob types
 # ----------------------------------------------------------------------------
-#  Which mobs can spawn, and how likely each is. weight is a relative value —
+#  Which mobs can spawn, and how likely each is. weight is a relative value;
 #  it does not have to add up to anything. Use any spawnable living entity name.
 # ----------------------------------------------------------------------------
 mob-types:
@@ -67,11 +67,11 @@ mob-types:
 #  4. Drops
 # ----------------------------------------------------------------------------
 #  Loot dropped when an LZBR mob is killed. Items are pulled from the loot table
-#  in loot.yml — the same rarities and probabilities your chests use — so mob
+#  in loot.yml, the same rarities and probabilities your chests use, so mob
 #  loot stays consistent with chest loot and is configured in one place.
 # ----------------------------------------------------------------------------
 drops:
-  # Chance (0–100) that a killed mob drops any LZBR loot at all.
+  # Chance (0 to 100) that a killed mob drops any LZBR loot at all.
   chance: 25.0
   # If it does drop, how many items to roll from the loot table (inclusive).
   rolls:

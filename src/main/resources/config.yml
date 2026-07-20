@@ -1,5 +1,5 @@
 # ============================================================================
-#  LZBR — LiveZone Battle Royale
+#  LZBR: LiveZone Battle Royale
 # ----------------------------------------------------------------------------
 #  Times are in seconds unless a key says otherwise; tick-based values say so.
 # ============================================================================
@@ -75,7 +75,7 @@ spawn:
       volume: 1.0
       pitch: 1.0
 
-# Match flow — the countdown before the zone goes live, and the win screen.
+# Match flow: the countdown before the zone goes live, and the win screen.
 # All title/subtitle/broadcast fields use MiniMessage formatting.
 game:
   # Center-screen countdown shown in the lobby after an admin starts; players are teleported into
@@ -128,7 +128,7 @@ arena:
       x: 0
       y: 64
       z: 0
-    # Paste air blocks from the schematic too — true fully overwrites the area,
+    # Paste air blocks from the schematic too. True fully overwrites the area,
     # clearing anything players built; false leaves existing blocks where the
     # schematic has air.
     paste-air: true

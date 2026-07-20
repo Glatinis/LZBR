@@ -1,14 +1,14 @@
 # ============================================================================
-#  LZBR — Loot configuration
+#  LZBR: Loot configuration
 # ----------------------------------------------------------------------------
 #  Controls what spawns inside loot chests, and where those chests are.
 #  Reload after editing with:  /lzbr loot reload
 #
 #  Sections, in order:
-#    1. settings         — how many items each chest gets, and fill behaviour
-#    2. rarities         — the rarity tiers, their display names and spawn odds
-#    3. loot             — the loot table: every item that can spawn
-#    4. chest-locations  — where the chests are (usually set in-game)
+#    1. settings         how many items each chest gets, and fill behaviour
+#    2. rarities         the rarity tiers, their display names and spawn odds
+#    3. loot             the loot table: every item that can spawn
+#    4. chest-locations  where the chests are (usually set in-game)
 # ============================================================================
 
 # ----------------------------------------------------------------------------
@@ -32,8 +32,8 @@ settings:
 #  rolled first using the chances below, then a random item of that rarity is
 #  chosen.
 #
-#  chance is a relative weight — values do NOT have to add up to 100, but
-#  keeping them on a 0–100 scale makes them read as percentages. Rarities that
+#  chance is a relative weight. Values do NOT have to add up to 100, but
+#  keeping them on a 0 to 100 scale makes them read as percentages. Rarities that
 #  have no items in the loot table are skipped automatically.
 #
 #  display-name uses MiniMessage formatting and is shown in each item's lore so
