@@ -100,6 +100,10 @@ Apply per world with `/mv modify set <property> <value>` and vanilla `/gamerule`
 | `/mv setspawn` | At the gathering point | Where players arrive and return to. |
 | `/gamerule doMobSpawning` | `false` | No wandering mobs in the lobby. |
 
+> **Inventories are cleared on every transition.** Players are stripped of inventory, armour and XP both
+> on entering the arena and on returning to the lobby, so all gear comes from arena loot and nothing
+> carries between rounds. Do not rely on giving players persistent lobby items.
+
 ### Arena (BR) world
 
 | Setting | Value | Reason |
@@ -228,6 +232,7 @@ All on-screen text uses [MiniMessage](https://docs.advntr.dev/minimessage/format
 4. Confirm, in order:
    - Countdown appears, then players are teleported into the arena
    - Players land scattered at separate spots, frozen while the get-ready countdown plays
+   - Players arrive empty-handed, with no inventory, armour or XP carried in from the lobby
    - Loot chests are stocked
    - Mobs spawn sparsely and do not overwhelm the fight
    - The zone telegraphs, shrinks, and damages players outside it

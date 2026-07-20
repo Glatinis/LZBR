@@ -3,6 +3,7 @@ package com.github.Glatinis.lZBR.world.zone;
 import com.github.Glatinis.lZBR.core.ConfigRepository;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -40,8 +41,8 @@ public class ZoneController {
         this.telegraph = new ZoneTelegraph(config, plugin.getLogger());
     }
 
-    public void start(List<Player> participants, Supplier<List<Player>> activePlayers) {
-        start(participants, activePlayers,
+    public void start(List<Player> participants, Supplier<List<Player>> activePlayers, World world) {
+        start(participants, activePlayers, world,
                 config.getZoneCenterX(), config.getZoneCenterZ(),
                 config.getZoneInitialRadius(), config.getZoneFinalRadius(),
                 config.getZoneShrinkDelay(), config.getZoneShrinkDuration());
@@ -49,13 +50,13 @@ public class ZoneController {
 
     public void startTest(Player player, double initialRadius, double finalRadius, int shrinkDelaySeconds, int shrinkDurationSeconds) {
         Location loc = player.getLocation();
-        start(List.of(player), () -> List.of(player),
+        start(List.of(player), () -> List.of(player), loc.getWorld(),
                 loc.getX(), loc.getZ(),
                 initialRadius, finalRadius,
                 shrinkDelaySeconds, shrinkDurationSeconds);
     }
 
-    private void start(List<Player> participants, Supplier<List<Player>> activePlayers,
+    private void start(List<Player> participants, Supplier<List<Player>> activePlayers, World world,
                        double centerX, double centerZ,
                        double initialRadius, double finalRadius,
                        int shrinkDelaySeconds, int shrinkDurationSeconds) {
@@ -85,6 +86,7 @@ public class ZoneController {
         damageTask = new ZoneDamageTask(
                 activePlayers,
                 this::getCurrentRadius,
+                world,
                 centerX, centerZ,
                 config.getZoneDamageAmount()
         ).runTaskTimer(plugin, intervalTicks, intervalTicks);

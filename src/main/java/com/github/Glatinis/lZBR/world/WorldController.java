@@ -7,8 +7,6 @@ import org.bukkit.entity.Player;
 import org.mvplugins.multiverse.core.MultiverseCoreApi;
 import org.mvplugins.multiverse.core.world.WorldManager;
 
-import java.util.function.Consumer;
-
 public class WorldController {
     private final LZBR plugin;
     private final ConfigRepository configRepository;
@@ -33,20 +31,30 @@ public class WorldController {
         return multiverseAvailable;
     }
 
-    // Resolves the loaded BR world and hands it to the callback. Used instead of a single fixed
-    // teleport target so callers (e.g. player scatter) can pick their own locations within it.
-    public void withBrWorld(Consumer<World> whenLoaded) {
+    // Resolves the loaded BR world, or null if Multiverse isn't hooked yet or the configured world
+    // doesn't exist. Returning the world (rather than swallowing the failure) lets callers abort
+    // cleanly instead of running a match nobody was teleported into.
+    public World resolveBrWorld() {
         if (!multiverseAvailable) {
             plugin.getLogger().warning("Tried to access the BR world, but Multiverse-Core isn't loaded.");
-            return;
+            return null;
         }
 
+        String worldName = configRepository.getBrWorldName();
+        World[] resolved = { null };
+
         WorldManager worldManager = multiverseApi.getWorldManager();
-        worldManager.getWorld(configRepository.getBrWorldName()).peek(mvWorld -> {
-            whenLoaded.accept(mvWorld.getSpawnLocation().getWorld());
-        }).onEmpty(() -> {
-            plugin.getLogger().warning("Could not find BR world.");
-        });
+        worldManager.getWorld(worldName)
+                .peek(mvWorld -> resolved[0] = mvWorld.getSpawnLocation().getWorld())
+                .onEmpty(() -> plugin.getLogger().warning(
+                        "Could not find BR world '" + worldName + "'. Check worlds.br in config.yml."));
+
+        return resolved[0];
+    }
+
+    // Pre-flight check so an admin gets told before the countdown rather than after it.
+    public boolean isBrWorldReady() {
+        return resolveBrWorld() != null;
     }
 
     public void teleportToLobby(Player player) {

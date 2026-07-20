@@ -1,5 +1,6 @@
 package com.github.Glatinis.lZBR.gamestate;
 
+import com.github.Glatinis.lZBR.commands.Messages;
 import com.github.Glatinis.lZBR.core.ConfigRepository;
 import com.github.Glatinis.lZBR.gamestate.br.BRManager;
 import com.github.Glatinis.lZBR.gamestate.br.MatchAnnouncer;
@@ -15,6 +16,7 @@ import com.github.Glatinis.lZBR.returncode.StartCode;
 import com.github.Glatinis.lZBR.world.zone.ZoneController;
 import com.github.Glatinis.lZBR.world.arena.ArenaResetService;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -118,14 +120,36 @@ public class GameStateController {
             plugin.getLogger().info("Filled " + filledChests + " loot chest(s) for the match.");
         }
 
-        brManager.sendToArena();
+        World arena = brManager.sendToArena();
+        if (arena == null) {
+            abortMatch();
+            return;
+        }
+
         // Players are frozen with an on-screen countdown right after landing; the zone/mobs/GO banner
         // only kick in once everyone's released, so nobody gets a head start while others are still loading in.
         spawnFreezeCountdown.start(players, () -> {
             announcer.announceStart(players);
-            zoneController.start(players, brManager::getPlayers);
+            zoneController.start(players, brManager::getPlayers, arena);
             mobManager.startSpawning();
         });
+    }
+
+    // The arena world couldn't be resolved (wrong worlds.br, or it was unloaded during the countdown),
+    // so nobody was teleported and no player state was touched. Bail out rather than run a "match"
+    // players are not actually in.
+    private void abortMatch() {
+        plugin.getLogger().severe("Cannot start the match: BR world '" + config.getBrWorldName()
+                + "' could not be resolved. Check worlds.br in config.yml and that the world is loaded.");
+
+        spawnFreezeCountdown.cancel();
+        for (Player player : brManager.getAllParticipants()) {
+            Messages.error(player, "The match could not start because the arena world is unavailable. "
+                    + "Please let an administrator know.");
+        }
+
+        brManager.reset();
+        gameState = GameState.LOBBY;
     }
 
     public boolean endGame() {

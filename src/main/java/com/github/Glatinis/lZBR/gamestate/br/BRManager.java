@@ -1,6 +1,7 @@
 package com.github.Glatinis.lZBR.gamestate.br;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -28,8 +29,9 @@ public class BRManager {
         spectators.clear();
     }
 
-    public void sendToArena() {
-        brService.sendToArena(alivePlayers);
+    // Returns the arena world, or null if it couldn't be resolved and nobody was moved.
+    public World sendToArena() {
+        return brService.sendToArena(alivePlayers);
     }
 
     public List<Player> getPlayers() {

@@ -35,6 +35,12 @@ public class StartCommand implements SubCommand {
             return Command.SINGLE_SUCCESS;
         }
 
+        if (!worldController.isBrWorldReady()) {
+            Messages.error(sender, "The arena world could not be found. Check that 'worlds.br' in "
+                    + "config.yml matches a loaded Multiverse world.");
+            return Command.SINGLE_SUCCESS;
+        }
+
         switch (gameState.startGame()) {
             case GAME_IN_PROGRESS -> Messages.error(sender, "The Battle Royale is already in progress.");
             case PLAYER_COUNT_INSUFFICIENT -> Messages.error(sender, "There are not enough players to start the match.");
